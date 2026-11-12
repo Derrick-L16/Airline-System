@@ -23,18 +23,14 @@ public class User
     public string Hash { get; set; }
     [MaxLength(100)]
     public string Name { get; set; }
-
-    // TODO
     public string Role => GetType().Name;
 }
 
-// TODO
 public class Admin : User
 {
 
 }
 
-// TODO
 public class Member : User
 {
     [MaxLength(100)]

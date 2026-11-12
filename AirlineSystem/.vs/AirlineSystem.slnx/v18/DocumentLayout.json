@@ -1,0 +1,309 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\shared\\_checkboxlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\shared\\_checkboxlist.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\account\\updatepassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\account\\updatepassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\account\\updateprofile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\account\\updateprofile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\migrations\\dbmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\migrations\\dbmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\models\\db.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\models\\viewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\models\\viewmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\account\\accessdenied.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\account\\accessdenied.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\home\\both.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\home\\both.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|c:\\users\\derrick lee jia qian\\documents\\github\\airline-system\\airlinesystem\\airlinesystem\\views\\home\\member.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A6DB3676-39C3-639C-4928-80EC8096CBEF}|AirlineSystem\\AirlineSystem.csproj|solutionrelative:airlinesystem\\views\\home\\member.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "_CheckBoxList.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Shared\\_CheckBoxList.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Shared\\_CheckBoxList.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Shared\\_CheckBoxList.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Shared\\_CheckBoxList.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T14:02:46.867Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ResetPassword.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\ResetPassword.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Account\\ResetPassword.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\ResetPassword.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Account\\ResetPassword.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:46:02.965Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AccountController.cs",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Controllers\\AccountController.cs",
+              "RelativeDocumentMoniker": "AirlineSystem\\Controllers\\AccountController.cs",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Controllers\\AccountController.cs",
+              "RelativeToolTip": "AirlineSystem\\Controllers\\AccountController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAOMAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-12T13:36:02.815Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\Register.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Account\\Register.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\Register.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Account\\Register.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:45:59.785Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "UpdatePassword.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\UpdatePassword.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Account\\UpdatePassword.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\UpdatePassword.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Account\\UpdatePassword.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:46:04.412Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAADwAAAAAAAAAAAAAAE8AAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:36:11.341Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:34:59.025Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UpdateProfile.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\UpdateProfile.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Account\\UpdateProfile.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\UpdateProfile.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Account\\UpdateProfile.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:46:05.595Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DBModelSnapshot.cs",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Migrations\\DBModelSnapshot.cs",
+              "RelativeDocumentMoniker": "AirlineSystem\\Migrations\\DBModelSnapshot.cs",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Migrations\\DBModelSnapshot.cs",
+              "RelativeToolTip": "AirlineSystem\\Migrations\\DBModelSnapshot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-12T13:46:46.506Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DB.cs",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Models\\DB.cs",
+              "RelativeDocumentMoniker": "AirlineSystem\\Models\\DB.cs",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Models\\DB.cs",
+              "RelativeToolTip": "AirlineSystem\\Models\\DB.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAhwCAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-12T13:46:17.298Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ViewModels.cs",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Models\\ViewModels.cs",
+              "RelativeDocumentMoniker": "AirlineSystem\\Models\\ViewModels.cs",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Models\\ViewModels.cs",
+              "RelativeToolTip": "AirlineSystem\\Models\\ViewModels.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAlwCsAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-12T13:46:07.548Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\Login.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Account\\Login.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\Login.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Account\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:45:50.314Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AccessDenied.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\AccessDenied.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Account\\AccessDenied.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Account\\AccessDenied.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Account\\AccessDenied.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:45:49.121Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Extensions.cs",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Extensions.cs",
+              "RelativeDocumentMoniker": "AirlineSystem\\Extensions.cs",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Extensions.cs",
+              "RelativeToolTip": "AirlineSystem\\Extensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-12T13:45:45.739Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:45:39.771Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Both.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Home\\Both.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Home\\Both.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Home\\Both.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Home\\Both.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:35:49.56Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Member.cshtml",
+              "DocumentMoniker": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Home\\Member.cshtml",
+              "RelativeDocumentMoniker": "AirlineSystem\\Views\\Home\\Member.cshtml",
+              "ToolTip": "C:\\Users\\Derrick Lee Jia Qian\\Documents\\GitHub\\Airline-System\\AirlineSystem\\AirlineSystem\\Views\\Home\\Member.cshtml",
+              "RelativeToolTip": "AirlineSystem\\Views\\Home\\Member.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-12T13:34:57.258Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

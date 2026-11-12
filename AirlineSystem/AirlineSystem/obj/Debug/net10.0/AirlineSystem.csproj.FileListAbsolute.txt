@@ -176,3 +176,4 @@ C:\Users\Derrick Lee Jia Qian\Documents\GitHub\Airline-System\AirlineSystem\Airl
 C:\Users\Derrick Lee Jia Qian\Documents\GitHub\Airline-System\AirlineSystem\AirlineSystem\obj\Debug\net10.0\AirlineSystem.pdb
 C:\Users\Derrick Lee Jia Qian\Documents\GitHub\Airline-System\AirlineSystem\AirlineSystem\obj\Debug\net10.0\AirlineSystem.genruntimeconfig.cache
 C:\Users\Derrick Lee Jia Qian\Documents\GitHub\Airline-System\AirlineSystem\AirlineSystem\obj\Debug\net10.0\ref\AirlineSystem.dll
+C:\Users\Derrick Lee Jia Qian\Documents\GitHub\Airline-System\AirlineSystem\AirlineSystem\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

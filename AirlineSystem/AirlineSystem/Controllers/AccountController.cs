@@ -17,11 +17,9 @@ public class AccountController(DB db,
     public IActionResult Login(LoginVM vm, string? returnURL)
     {
         // (1) Get user (admin or member) record based on email (PK)
-        // TODO
         var u = db.Users.Find(vm.Email);
 
         // (2) Custom validation -> verify password
-        // TODO
         if (u == null || !hp.VerifyPassword(u.Hash, vm.Password))
         {
             ModelState.AddModelError("", "Login credentials not matched.");
@@ -32,10 +30,8 @@ public class AccountController(DB db,
             TempData["Info"] = "Login successfully.";
 
             // (3) Sign in
-            // TODO
             hp.SignIn(u!.Email, u.Role, vm.RememberMe);
             // (4) Handle return URL
-            // TODO
             if (string.IsNullOrEmpty(returnURL))
             {
                 return RedirectToAction("Index", "Home");
@@ -51,7 +47,6 @@ public class AccountController(DB db,
         TempData["Info"] = "Logout successfully.";
 
         // Sign out
-        // TODO
         hp.SignOut();
 
         return RedirectToAction("Index", "Home");
@@ -100,7 +95,6 @@ public class AccountController(DB db,
         if (ModelState.IsValid)
         {
             // Insert member
-            // TODO
             db.Members.Add(new()
             {
                 Email = vm.Email,
@@ -118,25 +112,21 @@ public class AccountController(DB db,
     }
 
     // GET: Account/UpdatePassword
-    // TODO
     public IActionResult UpdatePassword()
     {
         return View();
     }
 
     // POST: Account/UpdatePassword
-    // TODO
     [HttpPost]
     public IActionResult UpdatePassword(UpdatePasswordVM vm)
     {
         // Get user (admin or member) record based on email (PK)
-        // TODO
-        var u = db.Users.Find("TODO");
+        var u = db.Users.Find(User.Identity!.Name);
         if (u == null) return RedirectToAction("Index", "Home");
 
         // If current password not matched
-        // TODO
-        if (true)
+        if (!hp.VerifyPassword(u.Hash, vm.Current))
         {
             ModelState.AddModelError("Current", "Current Password not matched.");
         }
@@ -144,7 +134,8 @@ public class AccountController(DB db,
         if (ModelState.IsValid)
         {
             // Update user password (hash)
-            // TODO
+            u.Hash = hp.HashPassword(vm.New);
+            db.SaveChanges();
 
             TempData["Info"] = "Password updated.";
             return RedirectToAction();
@@ -154,19 +145,17 @@ public class AccountController(DB db,
     }
 
     // GET: Account/UpdateProfile
-    // TODO
+    [Authorize(Roles = "Member")]
     public IActionResult UpdateProfile()
     {
         // Get member record based on email (PK)
-        // TODO
-        var m = db.Members.Find("TODO");
+        var m = db.Members.Find(User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
         var vm = new UpdateProfileVM
         {
-            // TODO
-            Email = "TODO",
-            Name = "TODO",
+            Email = m.Email,
+            Name = m.Name,
             PhotoURL = m.PhotoURL,
         };
 
@@ -174,13 +163,12 @@ public class AccountController(DB db,
     }
 
     // POST: Account/UpdateProfile
-    // TODO
+    [Authorize(Roles = "Member")]
     [HttpPost]
     public IActionResult UpdateProfile(UpdateProfileVM vm)
     {
         // Get member record based on email (PK)
-        // TODO
-        var m = db.Members.Find("TODO");
+        var m = db.Members.Find(User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
         if (vm.Photo != null)
@@ -191,8 +179,7 @@ public class AccountController(DB db,
 
         if (ModelState.IsValid)
         {
-            // TODO
-            var TODO = vm.Name;
+            m.Name = vm.Name;
 
             if (vm.Photo != null)
             {
@@ -206,8 +193,7 @@ public class AccountController(DB db,
             return RedirectToAction();
         }
 
-        // TODO
-        vm.Email = "TODO";
+        vm.Email = m.Email;
         vm.PhotoURL = m.PhotoURL;
         return View(vm);
     }
@@ -232,14 +218,14 @@ public class AccountController(DB db,
         if (ModelState.IsValid)
         {
             // Generate random password
-            // TODO
-            string password = "TODO";
+            string password = hp.RandomPassword();
 
             // Update user (admin or member) record
-            // TODO
+            u!.Hash = hp.HashPassword(password);
 
             // TODO: Send reset password email
 
+            // Temporary only
             TempData["Info"] = $"Password reset to <b>{password}</b>.";
             return RedirectToAction();
         }
