@@ -53,3 +53,17 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Visual Studio & .NET Build Results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache and user options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
