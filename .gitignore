@@ -1,70 +1,63 @@
-# Prerequisites
-*.d
+## ===================================================================
+## ASP.NET Core & Visual Studio .gitignore
+## ===================================================================
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# debug information files
-*.dwo
-
-# Visual Studio & .NET Build Results
+# Build results and compiled outputs
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+publish/
+*.azurepubxml
+*.azurepubxml.user
 
-# Visual Studio cache and user options
+# Visual Studio temporary files, user settings, and caches
 .vs/
-*.suo
 *.user
 *.userosscache
+*.suo
+*.userprefs
 *.sln.docstates
 *.cache
-*.sqlite
+*.vsidx
+*.dtbcache.v2
+
+# Visual Studio Code & JetBrains Rider
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.ide/
+
+# Package manager folders
+packages/
+*.nuget.props
+*.nuget.targets
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Local secrets & environment settings (keep template appsettings.json tracked)
+appsettings.*.local.json
+appsettings.Production.json
+
+# -------------------------------------------------------------------
+# Optional: LocalDB Database files (*.mdf / *.ldf)
+# If your lecturer/teammate needs the starter DB.mdf in GitHub,
+# keep them UNCOMMENTED or COMMENTED as needed:
+# -------------------------------------------------------------------
+# *.mdf
+# *.ldf
+
+# -------------------------------------------------------------------
+# Optional: Uploaded user files in wwwroot
+# If you don't want dynamically uploaded user photos committed:
+# -------------------------------------------------------------------
+# AirlineSystem/AirlineSystem/wwwroot/photos/*
+# !AirlineSystem/AirlineSystem/wwwroot/photos/photo.jpg
