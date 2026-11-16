@@ -24,6 +24,11 @@ public class AccountController(DB db,
         {
             ModelState.AddModelError("", "Login credentials not matched.");
         }
+        else if (u.Status == "Blocked")
+        {
+            ModelState.AddModelError("", "Your account has been blocked. Please contact the administrator.");
+
+        }
 
         if (ModelState.IsValid)
         {
@@ -101,6 +106,10 @@ public class AccountController(DB db,
                 Hash = hp.HashPassword(vm.Password),
                 Name = vm.Name,
                 PhotoURL = hp.SavePhoto(vm.Photo, "photos"),
+                PhoneNumber = vm.PhoneNumber,
+                IC = vm.IC,
+                PassportNo = vm.PassportNo,
+                PassportExpiry = vm.PassportExpiry,
             });
             db.SaveChanges();
 
@@ -157,6 +166,10 @@ public class AccountController(DB db,
             Email = m.Email,
             Name = m.Name,
             PhotoURL = m.PhotoURL,
+            PhoneNumber = m.PhoneNumber,
+            IC = m.IC,
+            PassportNo = m.PassportNo,
+            PassportExpiry = m.PassportExpiry,
         };
 
         return View(vm);
@@ -180,6 +193,10 @@ public class AccountController(DB db,
         if (ModelState.IsValid)
         {
             m.Name = vm.Name;
+            m.PhoneNumber = vm.PhoneNumber;
+            m.IC = vm.IC;
+            m.PassportNo = vm.PassportNo;
+            m.PassportExpiry = vm.PassportExpiry;
 
             if (vm.Photo != null)
             {
@@ -231,5 +248,50 @@ public class AccountController(DB db,
         }
 
         return View();
+    }
+
+    // GET: Account/Detail
+    [Authorize(Roles = "Admin")]
+    public IActionResult Detail(string? email)
+    {
+        var model = db.Users.Find(email);
+
+        if (model == null)
+        {
+            return RedirectToAction("Admin", "Home");
+        }
+
+        return View(model);
+    }
+
+    // POST: Account/Block
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Block(string email)
+    {
+        var u = db.Users.Find(email);
+        if (u != null && u.Role != "Admin") // Prevent Blocking another admin
+        {
+            u.Status = "Blocked";
+            db.SaveChanges();
+            TempData["Info"] = $"User {u.Name} has been blocked.";
+        }
+        return RedirectToAction("Admin", "Home");
+    }
+
+    // POST: Account/Unblock
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Unblock(string email)
+    {
+        var u = db.Users.Find(email);
+        if (u != null)
+        {
+            u.Status = null;
+            db.SaveChanges();
+            TempData["Info"] = $"User {u.Name} has been unblocked.";
+        }
+
+        return RedirectToAction("Admin", "Home");
     }
 }

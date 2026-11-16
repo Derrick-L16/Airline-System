@@ -7,6 +7,8 @@
 <form class="form" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly"></div>
 
+    <div class="form-title">Personal Information</div>
+
     <label asp-for="Email"></label>
     <input asp-for="Email" autofocus>
     <span asp-validation-for="Email"></span>
@@ -23,6 +25,10 @@
     <input asp-for="Name">
     <span asp-validation-for="Name"></span>
 
+    <label asp-for="PhoneNumber"></label>
+    <input asp-for="PhoneNumber">
+    <span asp-validation-for="PhoneNumber"></span>
+
     <label asp-for="Photo"></label>
     <label class="upload">
         <small>Select Photo...</small>
@@ -30,6 +36,21 @@
         <img src="/images/photo.jpg">
     </label>
     <span asp-validation-for="Photo"></span>
+
+    <!-- 2️⃣ Travel Information Section -->
+    <div class="form-title">Travel Information</div>
+
+    <label asp-for="IC"></label>
+    <input asp-for="IC" placeholder="000000-00-0000">
+    <span asp-validation-for="IC"></span>
+
+    <label asp-for="PassportNo"></label>
+    <input asp-for="PassportNo">
+    <span asp-validation-for="PassportNo"></span>
+
+    <label asp-for="PassportExpiry"></label>
+    <input asp-for="PassportExpiry">
+    <span asp-validation-for="PassportExpiry"></span>
 
     <section>
         <button>Register</button>

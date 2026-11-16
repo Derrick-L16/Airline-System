@@ -234,6 +234,19 @@ label > * {
     color: red;
 }
 
+/* Form Section Titles ------------------------------------------------------- */
+
+.form-title {
+    grid-column: 1 / -1; /* Crucial: Spans across all 3 columns */
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 2px solid #666;
+    padding-bottom: 4px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
 /* Photo Upload --------------------------------------------------------------- */
 
 .upload img {
@@ -255,4 +268,13 @@ label > * {
     border-radius: 3px;
     min-width: 30px;
     text-align: center;
+}
+
+/* Photo ---------------------------------------------------------------------- */
+.photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #ccc;
 }

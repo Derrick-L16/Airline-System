@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AirlineSystem.Controllers;
 
-public class HomeController : Controller
+public class HomeController(DB db,
+                               Helper hp) : Controller
 {
     // GET: Home/Index
     public IActionResult Index()
@@ -22,16 +23,18 @@ public class HomeController : Controller
     // GET: Home/Member
     // TODO
     [Authorize(Roles = "Member")]
-    public IActionResult Member()
+    public IActionResult Orders()
     {
         return View();
     }
 
     // GET: Home/Admin
-    // TODO
     [Authorize(Roles = "Admin")]
     public IActionResult Admin()
     {
-        return View();
+        var model = db.Users;
+        return View(model);
     }
+
+
 }

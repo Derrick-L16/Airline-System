@@ -1,5 +1,46 @@
-﻿@{
+﻿@model IEnumerable<User>
+
+@{
     ViewBag.Title = "Home | Admin";
 }
 
-<p>Only [Admin] role can access this page.</p>
+<p>@Model.Count() user(s)</p>
+
+<table class="table">
+    <tr>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var u in Model)
+    {
+        <tr onclick="location.href='/Account/Detail?email=@u.Email'" style="cursor: pointer;">
+            <td>@u.Email</td>
+            <td>@u.Name</td>
+            <td>@u.Role</td>
+            <td>
+                @if (u.Status == "Blocked")
+                {
+                    <span class="blocked">Blocked</span>
+                } else
+                {
+                    <span class="active">Active</span>
+                }
+            </td>
+            <td>
+                @if (u.Role == "Member")
+                {
+                    if (u.Status == "Blocked")
+                    {
+                        <button data-post="/Account/Unblock?email=@u.Email">Unblock</button>
+                    } else
+                    {
+                        <button data-post ="/Account/Block?email=@u.Email">Block</button>
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>

@@ -16,7 +16,7 @@
     <div class="info">@Html.Raw(TempData["Info"])</div>
 
     <header>
-        <h1><a href="/">Airline System</a></h1>
+        <h1><a href="/">DreaméJet</a></h1>
 
         @* User email and role *@
         @if (User.Identity!.IsAuthenticated)
@@ -32,7 +32,9 @@
         @if (User.IsInRole("Member"))
         {
             var photoURL = db.Members.Find(User.Identity.Name)!.PhotoURL;
-            <img src="/photos/@photoURL">
+            <a href="/Account/UpdateProfile" title="Update Profile">
+                <img src="/photos/@photoURL">
+            </a>
         }
     </header>
 
@@ -42,11 +44,11 @@
         @* Menu trimming *@
         @if (User.Identity.IsAuthenticated)
         {
-            <a href="/Home/Both">Both</a>
+            
         }
         @if (User.IsInRole("Member"))
         {
-            <a href="/Home/Member">Member</a>
+            <a href="/Home/Orders">Orders</a>
         }
         @if (User.IsInRole("Admin"))
         {
@@ -58,16 +60,15 @@
         @if (User.Identity!.IsAuthenticated)
         {
             <a href="/Account/Logout">Logout</a>
-            <a href="/Account/UpdatePassword">Update Password</a>
-        }
+                @if (User.IsInRole("Admin"))
+                {
+                    <a href="/Account/UpdatePassword">Update Password</a>
+                }
+            }
         else
         {
             <a href="/Account/Login">Login</a>
             <a href="/Account/Register">Register</a>
-        }
-        @if (User.IsInRole("Member"))
-        {
-            <a href="/Account/UpdateProfile">Update Profile</a>
         }
     </nav>
 
