@@ -80,38 +80,34 @@ public class Helper(IWebHostEnvironment en,
                == PasswordVerificationResult.Success;
     }
 
-    public void SignIn(string email, string role, bool rememberMe)
+    public void SignIn(int id, string email, string role, bool rememberMe)
     {
         // (1) Claim, identity and principal
-        // TODO
+
         List<Claim> claims = 
         [
+            new(ClaimTypes.NameIdentifier, id.ToString()),
             new(ClaimTypes.Name, email),
             new(ClaimTypes.Role, role),
         ];
 
-        // TODO
         ClaimsIdentity identity = new(claims, "Cookies");
 
-        // TODO
         ClaimsPrincipal principal = new(identity);
 
         // (2) Remember me (authentication properties)
-        // TODO
         AuthenticationProperties properties = new()
         {
             IsPersistent = rememberMe,
         };
 
         // (3) Sign in
-        // TODO
         ct.HttpContext!.SignInAsync(principal, properties);
     }
 
     public void SignOut()
     {
         // Sign out
-        // TODO
         ct.HttpContext!.SignOutAsync();
     }
 
@@ -119,7 +115,6 @@ public class Helper(IWebHostEnvironment en,
     {
         string s = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         
-        // TODO
         return Random.Shared.GetString(s, 10);
     }
 }

@@ -15,9 +15,12 @@ public class DB(DbContextOptions options) : DbContext(options)
 
 // Entity Classes -------------------------------------------------------------
 
+[Index(nameof(Email), IsUnique = true)]
 public class User
 {
-    [Key, MaxLength(100)]
+    [Key]
+    public int Id { get; set; }
+    [MaxLength(100)]
     public string Email { get; set; }
     [MaxLength(100)]
     public string Hash { get; set; }
@@ -25,6 +28,9 @@ public class User
     public string Name { get; set; }
     [MaxLength(20)]
     public string? Status { get; set; }
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LockoutEnd { get; set; }
+    public int LockoutCount { get; set; }
     public string Role => GetType().Name;
 }
 

@@ -16,7 +16,7 @@
     </tr>
     @foreach (var u in Model)
     {
-        <tr onclick="location.href='/Account/Detail?email=@u.Email'" style="cursor: pointer;">
+        <tr onclick="location.href='/Account/Detail?id=@u.Id'" style="cursor: pointer;">
             <td>@u.Email</td>
             <td>@u.Name</td>
             <td>@u.Role</td>

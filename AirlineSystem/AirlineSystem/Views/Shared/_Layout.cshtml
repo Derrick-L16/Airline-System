@@ -31,7 +31,7 @@
         @* Member photo *@
         @if (User.IsInRole("Member"))
         {
-            var photoURL = db.Members.Find(User.Identity.Name)!.PhotoURL;
+            var photoURL = db.Members.FirstOrDefault(m => m.Email == User.Identity.Name)!.PhotoURL;
             <a href="/Account/UpdateProfile" title="Update Profile">
                 <img src="/photos/@photoURL">
             </a>

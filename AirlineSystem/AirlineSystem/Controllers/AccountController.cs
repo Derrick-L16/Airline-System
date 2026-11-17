@@ -17,30 +17,72 @@ public class AccountController(DB db,
     public IActionResult Login(LoginVM vm, string? returnURL)
     {
         // (1) Get user (admin or member) record based on email (PK)
-        var u = db.Users.Find(vm.Email);
+        var u = db.Users.FirstOrDefault(u => u.Email == vm.Email);
 
-        // (2) Custom validation -> verify password
+        // (2) Check if the account is currently locked out
+        if (u != null && u.LockoutEnd.HasValue && u.LockoutEnd.Value > DateTime.Now)
+        {
+            var remaining = Math.Ceiling((u.LockoutEnd.Value - DateTime.Now).TotalMinutes);
+            ModelState.AddModelError("", $"Account temporarily locked. Try again in {remaining} minute(s).");
+            return View(vm);
+        }
+
+        // (3) Custom validation -> verify password
         if (u == null || !hp.VerifyPassword(u.Hash, vm.Password))
         {
-            ModelState.AddModelError("", "Login credentials not matched.");
+            // User exists but password is incorrect
+            if (u != null)
+            {
+                u.FailedLoginAttempts++;
+
+                // Trigger lockout every 3 failed attempts
+                if (u.FailedLoginAttempts >= 3)
+                {
+                    u.LockoutCount++;
+                    // Gradually increase: 5 mins, then 10 mins, 20 mins, etc. (Exponential)
+                    double lockoutMinutes = 5 * Math.Pow(2, u.LockoutCount - 1);
+
+                    u.LockoutEnd = DateTime.Now.AddMinutes(lockoutMinutes);
+                    u.FailedLoginAttempts = 0; // Reset attempt counter for the next cycle
+
+                    ModelState.AddModelError("", $"Too many failed attempts. Account locked for {lockoutMinutes} minutes.");
+                }
+                else
+                {
+                    int attemptsLeft = 3 - u.FailedLoginAttempts;
+                    ModelState.AddModelError("", $"Login credentials not matched. {attemptsLeft} attempt(s) remaining.");
+                }
+                db.SaveChanges();
+            }
+            else
+            {
+                // User email doesn't exist
+                ModelState.AddModelError("", "Account with the email provided does not exist.");
+            }
         }
         else if (u.Status == "Blocked")
         {
-            ModelState.AddModelError("", "Your account has been blocked. Please contact the administrator.");
-
+            ModelState.AddModelError("", "Your account has been permanently blocked. Please contact the administrator.");
         }
 
         if (ModelState.IsValid)
         {
+            // Reset all lockout tracking upon a successful login
+            u!.FailedLoginAttempts = 0;
+            u.LockoutCount = 0;
+            u.LockoutEnd = null;
+            db.SaveChanges();
+
             TempData["Info"] = "Login successfully.";
 
             // (3) Sign in
-            hp.SignIn(u!.Email, u.Role, vm.RememberMe);
+            hp.SignIn(u!.Id, u!.Email, u.Role, vm.RememberMe);
             // (4) Handle return URL
             if (string.IsNullOrEmpty(returnURL))
             {
                 return RedirectToAction("Index", "Home");
             }
+            return Redirect(returnURL);
         }
         
         return View(vm);
@@ -131,11 +173,11 @@ public class AccountController(DB db,
     public IActionResult UpdatePassword(UpdatePasswordVM vm)
     {
         // Get user (admin or member) record based on email (PK)
-        var u = db.Users.Find(User.Identity!.Name);
-        if (u == null) return RedirectToAction("Index", "Home");
+        var m = db.Members.FirstOrDefault(m => m.Email == User.Identity!.Name);
+        if (m == null) return RedirectToAction("Index", "Home");
 
         // If current password not matched
-        if (!hp.VerifyPassword(u.Hash, vm.Current))
+        if (!hp.VerifyPassword(m.Hash, vm.Current))
         {
             ModelState.AddModelError("Current", "Current Password not matched.");
         }
@@ -143,7 +185,7 @@ public class AccountController(DB db,
         if (ModelState.IsValid)
         {
             // Update user password (hash)
-            u.Hash = hp.HashPassword(vm.New);
+            m.Hash = hp.HashPassword(vm.New);
             db.SaveChanges();
 
             TempData["Info"] = "Password updated.";
@@ -181,7 +223,7 @@ public class AccountController(DB db,
     public IActionResult UpdateProfile(UpdateProfileVM vm)
     {
         // Get member record based on email (PK)
-        var m = db.Members.Find(User.Identity!.Name);
+        var m = db.Members.FirstOrDefault(m => m.Email == User.Identity!.Name); ;
         if (m == null) return RedirectToAction("Index", "Home");
 
         if (vm.Photo != null)
@@ -252,9 +294,9 @@ public class AccountController(DB db,
 
     // GET: Account/Detail
     [Authorize(Roles = "Admin")]
-    public IActionResult Detail(string? email)
+    public IActionResult Detail(int id)
     {
-        var model = db.Users.Find(email);
+        var model = db.Users.Find(id);
 
         if (model == null)
         {
@@ -269,7 +311,7 @@ public class AccountController(DB db,
     [Authorize(Roles = "Admin")]
     public IActionResult Block(string email)
     {
-        var u = db.Users.Find(email);
+        var u = db.Users.FirstOrDefault(u => u.Email == email);
         if (u != null && u.Role != "Admin") // Prevent Blocking another admin
         {
             u.Status = "Blocked";
@@ -284,7 +326,7 @@ public class AccountController(DB db,
     [Authorize(Roles = "Admin")]
     public IActionResult Unblock(string email)
     {
-        var u = db.Users.Find(email);
+        var u = db.Users.FirstOrDefault(u => u.Email == email);
         if (u != null)
         {
             u.Status = null;
