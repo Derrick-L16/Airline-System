@@ -8,10 +8,47 @@ namespace AirlineSystem.Models;
 
 public class DB(DbContextOptions options) : DbContext(options)
 {
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Departure relationship
+        modelBuilder.Entity<Flight>()
+            .HasOne(f => f.DepartureAirport)
+            .WithMany(a => a.DepartureFlights)
+            .HasForeignKey(f => f.DepartureAirportId);
+
+        // Arrival relationship
+        modelBuilder.Entity<Flight>()
+            .HasOne(f => f.ArrivalAirport)
+            .WithMany(a => a.ArrivalFlights)
+            .HasForeignKey(f => f.ArrivalAirportId);
+
+        modelBuilder.Entity<Booking>()
+            .HasOne(b => b.Member)
+            .WithMany()
+            .HasForeignKey(b => b.MemberId);
+
+        modelBuilder.Entity<Passenger>()
+            .HasOne(p => p.Member)
+            .WithMany()
+            .HasForeignKey(p => p.MemberId);
+    }
     // DB Sets
     public DbSet<User> Users { get; set; }
     public DbSet<Admin> Admins { get; set; }
     public DbSet<Member> Members { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<BookingPassenger> BookingPassengers { get; set; }
+    public DbSet<Passenger> Passengers { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<Flight> Flights { get; set; }
+    public DbSet<FlightCompany> FlightCompanies { get; set; }
+    public DbSet<Seat> Seats { get; set; }
+    public DbSet<Meal> Meals { get; set; }
+    public DbSet<Airport> Airports { get; set; }
+    public DbSet<Country> Countries { get; set; }
+
 }
 
 // Entity Classes -------------------------------------------------------------
@@ -54,8 +91,8 @@ public class Booking
     public int BookingId { get; set; }
 
     public string BookingReference { get; set; }
+    public int UserId { get; set; }
     public int MemberId { get; set; }
-    public int FlightId { get; set; }
 
     public DateTime BookingDate { get; set; }
 
