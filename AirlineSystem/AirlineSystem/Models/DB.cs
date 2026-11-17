@@ -24,6 +24,8 @@ public class User
     public string Hash { get; set; }
     [MaxLength(100)]
     public string Name { get; set; }
+    [MaxLength(20)]
+    public string? Status { get; set; }
     public string Role => GetType().Name;
 }
 
@@ -36,6 +38,15 @@ public class Member : User
 {
     [MaxLength(100)]
     public string PhotoURL { get; set; }
+    [MaxLength(20)]
+    public string PhoneNumber { get; set; }
+    [MaxLength(20)]
+    public string IC { get; set; }
+    [MaxLength(20)]
+    public string? PassportNo { get; set; }
+
+    public DateOnly? PassportExpiry { get; set; }
+    
 }
 
 public class Booking

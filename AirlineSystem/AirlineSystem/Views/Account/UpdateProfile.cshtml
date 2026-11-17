@@ -7,6 +7,9 @@
 <form class="form" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly"></div>
 
+    <!-- Personal Information Section -->
+    <div class="form-title">Personal Information</div>
+
     <label asp-for="Email"></label>
     <b>@Model.Email</b>
     <br>
@@ -14,6 +17,10 @@
     <label asp-for="Name"></label>
     <input asp-for="Name" autofocus>
     <span asp-validation-for="Name"></span>
+
+    <label asp-for="PhoneNumber"></label>
+    <input asp-for="PhoneNumber">
+    <span asp-validation-for="PhoneNumber"></span>
 
     <label asp-for="Photo"></label>
     <label class="upload">
@@ -23,8 +30,24 @@
     </label>
     <span asp-validation-for="Photo"></span>
 
+    <!-- Travel Information Section -->
+    <div class="form-title">Travel Information</div>
+
+    <label asp-for="IC"></label>
+    <input asp-for="IC" placeholder="000000-00-0000">
+    <span asp-validation-for="IC"></span>
+
+    <label asp-for="PassportNo"></label>
+    <input asp-for="PassportNo">
+    <span asp-validation-for="PassportNo"></span>
+
+    <label asp-for="PassportExpiry"></label>
+    <input asp-for="PassportExpiry">
+    <span asp-validation-for="PassportExpiry"></span>
+
     <section>
         <button>Update</button>
         <button type="reset">Reset</button>
+        <button type="button" data-get="/Account/UpdatePassword">Change Password</button>
     </section>
 </form>

@@ -1,0 +1,69 @@
+﻿@model User
+
+@{
+    ViewBag.Title = "Account | User Detail";
+    var member = Model as Member; // Check if user is a Member
+}
+
+<p>
+    @if (member != null && !string.IsNullOrEmpty(member.PhotoURL))
+    {
+        <img src="/photos/@member.PhotoURL" class="photo">
+    }
+    else
+    {
+        <img src="/images/photo.jpg" class="photo">
+    }
+</p>
+
+<table class="table detail">
+    <tr>
+        <th>Email</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Name</th>
+        <td>@Model.Name</td>
+    </tr>
+    <tr>
+        <th>Role</th>
+        <td>@Model.Role</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>
+            @if (Model.Status == "Blocked")
+            {
+                <span style="color: red; font-weight: bold;">Blocked</span>
+            }
+            else
+            {
+                <span style="color: green; font-weight: bold;">Active</span>
+            }
+        </td>
+    </tr>
+
+    @if (member != null)
+    {
+        <tr>
+            <th>Phone Number</th>
+            <td>@(member.PhoneNumber ?? "-")</td>
+        </tr>
+        <tr>
+            <th>IC</th>
+            <td>@(member.IC ?? "-")</td>
+        </tr>
+        <tr>
+            <th>Passport Number</th>
+            <td>@(member.PassportNo ?? "-")</td>
+        </tr>
+        <tr>
+            <th>Passport Expiry Date</th>
+            <td>@(member.PassportExpiry?.ToString("yyyy-MM-dd") ?? "-")</td>
+        </tr>
+    }
+</table>
+
+<p>
+    <button data-get="/Home/Admin">Back to List</button>
+</p>

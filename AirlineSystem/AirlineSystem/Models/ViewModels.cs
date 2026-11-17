@@ -42,6 +42,21 @@ public class RegisterVM
     public string Name { get; set; }
 
     public IFormFile Photo { get; set; }
+
+    [Required]
+    [RegularExpression(@"^01\d-\d{7,8}$", ErrorMessage = "Format: 01x-xxxxxxx")]
+    public string PhoneNumber { get; set; }
+    // IC format: 020512-10-1234
+    [RegularExpression(@"^\d{6}-\d{2}-\d{4}$", ErrorMessage = "Format: xxxxxx-xx-xxxx")]
+    public string? IC { get; set; }
+
+    [StringLength(20)]
+    [DisplayName("Passport Number")]
+    public string? PassportNo { get; set; }
+
+    [DataType(DataType.Date)]
+    [DisplayName("Passport Expiry Date")]
+    public DateOnly? PassportExpiry { get; set; }
 }
 
 public class UpdatePasswordVM
@@ -73,6 +88,23 @@ public class UpdateProfileVM
     public string? PhotoURL { get; set; }
 
     public IFormFile? Photo { get; set; }
+
+    [Required]
+    [DisplayName("Phone Number")]
+    [RegularExpression(@"^01\d-\d{7,8}$", ErrorMessage = "Format: 01x-xxxxxxx")]
+    public string PhoneNumber { get; set; }
+
+    // IC format: 020512-10-1234
+    [RegularExpression(@"^\d{6}-\d{2}-\d{4}$", ErrorMessage = "Format: xxxxxx-xx-xxxx")]
+    public string? IC { get; set; }
+
+    [StringLength(20)]
+    [DisplayName("Passport Number")]
+    public string? PassportNo { get; set; }
+
+    [DataType(DataType.Date)]
+    [DisplayName("Passport Expiry Date")]
+    public DateOnly? PassportExpiry { get; set; }
 }
 
 public class ResetPasswordVM
