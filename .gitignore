@@ -68,3 +68,5 @@ dkms.conf
 *.sln.docstates
 *.cache
 *.sqlite
+*.mdf
+*.ldf
