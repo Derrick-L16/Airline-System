@@ -33,6 +33,11 @@ public class DB(DbContextOptions options) : DbContext(options)
             .HasOne(p => p.Member)
             .WithMany()
             .HasForeignKey(p => p.MemberId);
+
+        modelBuilder.Entity<Booking>()
+            .HasOne(b => b.Payment)
+            .WithOne(p => p.Booking)
+            .HasForeignKey<Payment>(p => p.BookingId);
     }
     // DB Sets
     public DbSet<User> Users { get; set; }
@@ -97,13 +102,13 @@ public class Booking
     public int BookingId { get; set; }
 
     public string BookingReference { get; set; }
-    public int UserId { get; set; }
+
     public int MemberId { get; set; }
+    public int FlightId { get; set; }
 
     public DateTime BookingDate { get; set; }
 
     public string BookingStatus { get; set; }
-    // Confirmed, Cancelled
 
     // Navigation properties
     public Member Member { get; set; }
