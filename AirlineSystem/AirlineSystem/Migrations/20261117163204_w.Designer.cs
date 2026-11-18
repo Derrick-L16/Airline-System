@@ -407,7 +407,7 @@ namespace AirlineSystem.Migrations
                     b.HasOne("AirlineSystem.Models.Country", "Country")
                         .WithMany("Airports")
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Country");
@@ -447,13 +447,13 @@ namespace AirlineSystem.Migrations
                     b.HasOne("AirlineSystem.Models.Passenger", "Passenger")
                         .WithMany("BookingPassengers")
                         .HasForeignKey("PassengerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("AirlineSystem.Models.Seat", "Seat")
                         .WithMany("BookingPassengers")
                         .HasForeignKey("SeatId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Booking");
@@ -470,13 +470,13 @@ namespace AirlineSystem.Migrations
                     b.HasOne("AirlineSystem.Models.Airport", "ArrivalAirport")
                         .WithMany("ArrivalFlights")
                         .HasForeignKey("ArrivalAirportId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("AirlineSystem.Models.Airport", "DepartureAirport")
                         .WithMany("DepartureFlights")
                         .HasForeignKey("DepartureAirportId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("AirlineSystem.Models.FlightCompany", "FlightCompany")
@@ -503,7 +503,7 @@ namespace AirlineSystem.Migrations
                     b.HasOne("AirlineSystem.Models.Country", "Nationality")
                         .WithMany("Passengers")
                         .HasForeignKey("NationalityCountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Member");

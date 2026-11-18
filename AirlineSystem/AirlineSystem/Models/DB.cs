@@ -16,13 +16,41 @@ public class DB(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<Flight>()
             .HasOne(f => f.DepartureAirport)
             .WithMany(a => a.DepartureFlights)
-            .HasForeignKey(f => f.DepartureAirportId);
+            .HasForeignKey(f => f.DepartureAirportId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         // Arrival relationship
         modelBuilder.Entity<Flight>()
             .HasOne(f => f.ArrivalAirport)
             .WithMany(a => a.ArrivalFlights)
-            .HasForeignKey(f => f.ArrivalAirportId);
+            .HasForeignKey(f => f.ArrivalAirportId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Airport - Country relationship
+        modelBuilder.Entity<Airport>()
+            .HasOne(a => a.Country)
+            .WithMany(c => c.Airports)
+            .HasForeignKey(a => a.CountryId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Passenger - Nationality relationship
+        modelBuilder.Entity<Passenger>()
+            .HasOne(p => p.Nationality)
+            .WithMany(c => c.Passengers)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // BookingPassenger relationships to prevent multiple cascade paths
+        modelBuilder.Entity<BookingPassenger>()
+            .HasOne(bp => bp.Passenger)
+            .WithMany(p => p.BookingPassengers)
+            .HasForeignKey(bp => bp.PassengerId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<BookingPassenger>()
+            .HasOne(bp => bp.Seat)
+            .WithMany(s => s.BookingPassengers)
+            .HasForeignKey(bp => bp.SeatId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Booking>()
             .HasOne(b => b.Member)

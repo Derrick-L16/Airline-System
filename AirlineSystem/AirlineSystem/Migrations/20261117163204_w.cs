@@ -70,8 +70,7 @@ namespace AirlineSystem.Migrations
                         name: "FK_Airports_Countries_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Countries",
-                        principalColumn: "CountryId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CountryId");
                 });
 
             migrationBuilder.CreateTable(
@@ -94,8 +93,7 @@ namespace AirlineSystem.Migrations
                         name: "FK_Passengers_Countries_NationalityCountryId",
                         column: x => x.NationalityCountryId,
                         principalTable: "Countries",
-                        principalColumn: "CountryId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CountryId");
                     table.ForeignKey(
                         name: "FK_Passengers_Users_MemberId",
                         column: x => x.MemberId,
@@ -125,14 +123,12 @@ namespace AirlineSystem.Migrations
                         name: "FK_Flights_Airports_ArrivalAirportId",
                         column: x => x.ArrivalAirportId,
                         principalTable: "Airports",
-                        principalColumn: "AirportId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "AirportId");
                     table.ForeignKey(
                         name: "FK_Flights_Airports_DepartureAirportId",
                         column: x => x.DepartureAirportId,
                         principalTable: "Airports",
-                        principalColumn: "AirportId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "AirportId");
                     table.ForeignKey(
                         name: "FK_Flights_FlightCompanies_FlightCompanyId",
                         column: x => x.FlightCompanyId,
@@ -242,14 +238,12 @@ namespace AirlineSystem.Migrations
                         name: "FK_BookingPassengers_Passengers_PassengerId",
                         column: x => x.PassengerId,
                         principalTable: "Passengers",
-                        principalColumn: "PassengerId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "PassengerId");
                     table.ForeignKey(
                         name: "FK_BookingPassengers_Seats_SeatId",
                         column: x => x.SeatId,
                         principalTable: "Seats",
-                        principalColumn: "SeatId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "SeatId");
                 });
 
             migrationBuilder.CreateIndex(
