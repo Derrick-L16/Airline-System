@@ -8,10 +8,80 @@ namespace AirlineSystem.Models;
 
 public class DB(DbContextOptions options) : DbContext(options)
 {
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Departure relationship
+        modelBuilder.Entity<Flight>()
+            .HasOne(f => f.DepartureAirport)
+            .WithMany(a => a.DepartureFlights)
+            .HasForeignKey(f => f.DepartureAirportId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Arrival relationship
+        modelBuilder.Entity<Flight>()
+            .HasOne(f => f.ArrivalAirport)
+            .WithMany(a => a.ArrivalFlights)
+            .HasForeignKey(f => f.ArrivalAirportId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Airport - Country relationship
+        modelBuilder.Entity<Airport>()
+            .HasOne(a => a.Country)
+            .WithMany(c => c.Airports)
+            .HasForeignKey(a => a.CountryId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Passenger - Nationality relationship
+        modelBuilder.Entity<Passenger>()
+            .HasOne(p => p.Nationality)
+            .WithMany(c => c.Passengers)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // BookingPassenger relationships to prevent multiple cascade paths
+        modelBuilder.Entity<BookingPassenger>()
+            .HasOne(bp => bp.Passenger)
+            .WithMany(p => p.BookingPassengers)
+            .HasForeignKey(bp => bp.PassengerId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<BookingPassenger>()
+            .HasOne(bp => bp.Seat)
+            .WithMany(s => s.BookingPassengers)
+            .HasForeignKey(bp => bp.SeatId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Booking>()
+            .HasOne(b => b.Member)
+            .WithMany()
+            .HasForeignKey(b => b.MemberId);
+
+        modelBuilder.Entity<Passenger>()
+            .HasOne(p => p.Member)
+            .WithMany()
+            .HasForeignKey(p => p.MemberId);
+
+        modelBuilder.Entity<Booking>()
+            .HasOne(b => b.Payment)
+            .WithOne(p => p.Booking)
+            .HasForeignKey<Payment>(p => p.BookingId);
+    }
     // DB Sets
     public DbSet<User> Users { get; set; }
     public DbSet<Admin> Admins { get; set; }
     public DbSet<Member> Members { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<BookingPassenger> BookingPassengers { get; set; }
+    public DbSet<Passenger> Passengers { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<Flight> Flights { get; set; }
+    public DbSet<FlightCompany> FlightCompanies { get; set; }
+    public DbSet<Seat> Seats { get; set; }
+    public DbSet<Meal> Meals { get; set; }
+    public DbSet<Airport> Airports { get; set; }
+    public DbSet<Country> Countries { get; set; }
+
 }
 
 // Entity Classes -------------------------------------------------------------
@@ -60,13 +130,13 @@ public class Booking
     public int BookingId { get; set; }
 
     public string BookingReference { get; set; }
+
     public int MemberId { get; set; }
     public int FlightId { get; set; }
 
     public DateTime BookingDate { get; set; }
 
     public string BookingStatus { get; set; }
-    // Confirmed, Cancelled
 
     // Navigation properties
     public Member Member { get; set; }
