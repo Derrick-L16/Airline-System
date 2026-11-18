@@ -1,26 +1,56 @@
 ﻿@{
-    ViewBag.Title = "Main";
+    ViewBag.Title = "Find Your Flight";
 }
 
-<p>Secure your flights ✈️✈️✈️.</p>
+<div class="container mt-5">
 
-<table class="table">
-    <tr>
-        <th>Company</th>
-        <th>Destination Country</th>
-        <th>Date</th>
-        <th>Time</th>
-    </tr>
-    <tr>
-        <td>AirMalaysia</td>
-        <td>Osaka, Japan</td>
-        <td>9-1-2027</td>
-        <td>08:30-15:30</td>
-    </tr>
-    <tr>
-        <td>BalikAir</td>
-        <td>Tokyo, Japan</td>
-        <td>9-1-2027</td>
-        <td>00:30-07:30</td>
-    </tr>
-</table>
+    <p>Search for available flights to your destination.</p>
+
+    <form asp-controller="Home"
+          asp-action="SearchFlights"
+          method="get">
+
+        <div class="mb-3">
+            <label>Departure Country</label>
+            <input type="text"
+                   name="departureCountry"
+                   class="form-control"
+                   placeholder="e.g. Malaysia"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label>Destination</label>
+            <input type="text"
+                   name="destination"
+                   class="form-control"
+                   placeholder="e.g. Japan"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label>Travel Date</label>
+            <input type="date"
+                   name="travelDate"
+                   class="form-control"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label>Number of Passengers</label>
+            <input type="number"
+                   name="pax"
+                   class="form-control"
+                   min="1"
+                   max="9"
+                   value="1"
+                   required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Search Flights
+        </button>
+
+    </form>
+
+</div>
