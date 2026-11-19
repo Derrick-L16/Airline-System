@@ -113,3 +113,7 @@ public class ResetPasswordVM
     [EmailAddress]
     public string Email { get; set; }
 }
+public class RecaptchaResult
+{
+    public bool Success { get; set; }
+}

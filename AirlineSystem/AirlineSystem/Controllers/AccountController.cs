@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace AirlineSystem.Controllers;
 
 public class AccountController(DB db,
-                               Helper hp) : Controller
+                               Helper hp,
+                               IConfiguration config) : Controller
 {
     // GET: Account/Login
     public IActionResult Login()
@@ -14,12 +15,41 @@ public class AccountController(DB db,
 
     // POST: Account/Login
     [HttpPost]
-    public IActionResult Login(LoginVM vm, string? returnURL)
+    public async Task<IActionResult> Login(LoginVM vm, string? returnURL)
     {
-        // (1) Get user (admin or member) record based on email (PK)
+        // (1) Verify Google reCAPTCHA
+        string? captchaResponse = Request.Form["g-recaptcha-response"];
+
+        if (string.IsNullOrEmpty(captchaResponse))
+        {
+            ModelState.AddModelError("", "Please check the 'I'm not a robot' box.");
+            return View(vm);
+        }
+
+        var secretKey = config["Recaptcha:SecretKey"];
+        using var client = new HttpClient();
+        var verifyUrl = $"https://www.google.com/recaptcha/api/siteverify?secret={secretKey}&response={captchaResponse}";
+
+        var response = await client.PostAsync(verifyUrl, null);
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<RecaptchaResult>();
+            if (result == null || !result.Success)
+            {
+                ModelState.AddModelError("", "CAPTCHA verification failed. Please try again.");
+                return View(vm);
+            }
+        }
+        else
+        {
+            ModelState.AddModelError("", "Unable to verify CAPTCHA at this time.");
+            return View(vm);
+        }
+
+        // (2) Get user (admin or member) record based on email (PK)
         var u = db.Users.FirstOrDefault(u => u.Email == vm.Email);
 
-        // (2) Check if the account is currently locked out
+        // (3) Check if the account is currently locked out
         if (u != null && u.LockoutEnd.HasValue && u.LockoutEnd.Value > DateTime.Now)
         {
             var remaining = Math.Ceiling((u.LockoutEnd.Value - DateTime.Now).TotalMinutes);
@@ -27,7 +57,7 @@ public class AccountController(DB db,
             return View(vm);
         }
 
-        // (3) Custom validation -> verify password
+        // (4) Custom validation -> verify password
         if (u == null || !hp.VerifyPassword(u.Hash, vm.Password))
         {
             // User exists but password is incorrect
