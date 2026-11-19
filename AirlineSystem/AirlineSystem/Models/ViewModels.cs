@@ -113,3 +113,37 @@ public class ResetPasswordVM
     [EmailAddress]
     public string Email { get; set; }
 }
+
+public class CreateFlightVM
+{
+    [Required]
+    [StringLength(20)]
+    [DisplayName("Flight Number")]
+    public string FlightNumber { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a flight company.")]
+    [DisplayName("Flight Company")]
+    public int FlightCompanyId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a departure airport.")]
+    [DisplayName("Departure Airport")]
+    public int DepartureAirportId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a destination airport.")]
+    [DisplayName("Destination Airport")]
+    public int ArrivalAirportId { get; set; }
+
+    [Required]
+    [DataType(DataType.DateTime)]
+    [DisplayName("Departure Time")]
+    public DateTime DepartureTime { get; set; }
+
+    [Required]
+    [DataType(DataType.DateTime)]
+    [DisplayName("Arrival Time")]
+    public DateTime ArrivalTime { get; set; }
+
+    [Range(typeof(decimal), "0.01", "999999.99", ErrorMessage = "Base price must be greater than 0.")]
+    [DisplayName("Base Price (RM)")]
+    public decimal BasePrice { get; set; }
+}
