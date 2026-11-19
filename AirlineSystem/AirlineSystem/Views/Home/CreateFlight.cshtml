@@ -1,3 +1,54 @@
-﻿@{
+@model CreateFlightVM
+
+@{
     ViewBag.Title = "Admin | Create Flight";
 }
+
+<form class="form" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="form-title">Flight Details</div>
+
+    <label asp-for="FlightNumber"></label>
+    <input asp-for="FlightNumber" autofocus placeholder="e.g. DJ101">
+    <span asp-validation-for="FlightNumber"></span>
+
+    <label asp-for="FlightCompanyId"></label>
+    <select asp-for="FlightCompanyId" asp-items="ViewBag.FlightCompanies">
+        <option value="">-- Select flight company --</option>
+    </select>
+    <span asp-validation-for="FlightCompanyId"></span>
+
+    <div class="form-title">Route and Schedule</div>
+
+    <label asp-for="DepartureAirportId"></label>
+    <select asp-for="DepartureAirportId" asp-items="ViewBag.Airports">
+        <option value="">-- Select departure airport --</option>
+    </select>
+    <span asp-validation-for="DepartureAirportId"></span>
+
+    <label asp-for="ArrivalAirportId"></label>
+    <select asp-for="ArrivalAirportId" asp-items="ViewBag.Airports">
+        <option value="">-- Select destination airport --</option>
+    </select>
+    <span asp-validation-for="ArrivalAirportId"></span>
+
+    <label asp-for="DepartureTime"></label>
+    <input asp-for="DepartureTime" type="datetime-local">
+    <span asp-validation-for="DepartureTime"></span>
+
+    <label asp-for="ArrivalTime"></label>
+    <input asp-for="ArrivalTime" type="datetime-local">
+    <span asp-validation-for="ArrivalTime"></span>
+
+    <div class="form-title">Fare</div>
+
+    <label asp-for="BasePrice"></label>
+    <input asp-for="BasePrice" type="number" min="0.01" step="0.01" placeholder="0.00">
+    <span asp-validation-for="BasePrice"></span>
+
+    <section>
+        <button type="submit">Create Flight</button>
+        <button type="reset">Reset</button>
+        <a href="/Home/Admin">Back to Admin</a>
+    </section>
+</form>
