@@ -7,7 +7,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSqlServer<DB>($@"
     Data Source=(LocalDB)\MSSQLLocalDB;
     AttachDbFilename={builder.Environment.ContentRootPath}\DB.mdf;
-    Database=AirlineDB;
+    Integrated Security=True;
 ");
 builder.Services.AddScoped<Helper>();
 

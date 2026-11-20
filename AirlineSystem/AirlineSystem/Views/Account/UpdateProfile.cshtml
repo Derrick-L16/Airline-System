@@ -23,11 +23,15 @@
     <span asp-validation-for="PhoneNumber"></span>
 
     <label asp-for="Photo"></label>
-    <label class="upload">
-        <small>Select Photo...</small>
-        <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
-        <img src="/photos/@Model.PhotoURL">
-    </label>
+    <div>
+        <label class="upload">
+            <small>Click or Drag Photo...</small>
+            <input asp-for="Photo" accept="image/jpeg,image/png" hidden>
+            <img src="/images/photo.jpg">
+        </label>
+        <br>
+        <button type="button" data-camera>📷 Camera</button>
+    </div>
     <span asp-validation-for="Photo"></span>
 
     <!-- Travel Information Section -->

@@ -29,13 +29,6 @@ public class HomeController(DB db,
         return View();
     }
 
-    // GET: Home/Admin
-    [Authorize(Roles = "Admin")]
-    public IActionResult Admin()
-    {
-        var model = db.Users;
-        return View(model);
-    }
 
     public IActionResult CreateFlight()
     {

@@ -1,0 +1,93 @@
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<User>
+
+@{
+    string[] fields = ["Email", "Name", "Role", "Status"];
+}
+
+<!-- Keep current sort parameters synced with the search form -->
+@Html.Hidden("sort", "", new { form = "f" })
+@Html.Hidden("dir", "", new { form = "f" })
+
+<p>
+    @Model.Count() of @Model.TotalItemCount user(s) |
+    Page @Model.PageNumber of @Model.PageCount
+</p>
+
+<table class="table">
+    <tr>
+        @foreach (var f in fields)
+        {
+            string d = "asc";
+            string c = "";
+
+            if (f == ViewBag.Sort)
+            {
+                d = ViewBag.Dir == "des" ? "asc" : "des";
+                c = ViewBag.Dir;
+            }
+
+            <th>
+                <a data-ajax="true"
+                   data-ajax-update="#target"
+                   data-ajax-loading="#loader"
+                   href="?name=@ViewBag.Name&role=@ViewBag.Role&sort=@f&dir=@d" class="@c">@f</a>
+            </th>
+        }
+        <th>Action</th>
+    </tr>
+
+    @foreach (var u in Model)
+    {
+        <tr onclick="location.href='/Account/Detail?id=@u.Id'" style="cursor: pointer;">
+            <td>@u.Email</td>
+            <td>@u.Name</td>
+            <td>@u.Role</td>
+            <td>
+                @if (u.Status == "Blocked")
+                {
+                    <span class="blocked">Blocked</span>
+                }
+                else
+                {
+                    <span class="active">Active</span>
+                }
+            </td>
+            <td onclick="event.stopPropagation()">
+                @if (u.Role == "Member")
+                {
+                    if (u.Status == "Blocked")
+                    {
+                        <button data-post="/Account/Unblock?email=@u.Email">Unblock</button>
+                    }
+                    else
+                    {
+                        <button data-post="/Account/Block?email=@u.Email">Block</button>
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+@{
+    var options = PagedListRenderOptions.ClassicPlusFirstAndLast;
+    options.LinkToFirstPageFormat = "First";
+    options.LinkToLastPageFormat = "Last";
+    options.LinkToPreviousPageFormat = "Previous";
+    options.LinkToNextPageFormat = "Next";
+
+    var ajaxOptions = new AjaxOptions
+    {
+        HttpMethod = "get",
+        UpdateTargetId = "target",
+        LoadingElementId = "#loader",
+    };
+}
+
+@Html.PagedListPager(
+    Model,
+    p => $"?name={ViewBag.Name}&role={ViewBag.Role}&sort={ViewBag.Sort}&dir={ViewBag.Dir}&page={p}",
+    PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(options, ajaxOptions)
+)

@@ -229,8 +229,8 @@ public class AccountController(DB db,
     [Authorize(Roles = "Member")]
     public IActionResult UpdateProfile()
     {
-        // Get member record based on email (PK)
-        var m = db.Members.Find(User.Identity!.Name);
+        // Get member record based on signed-in user's email
+        var m = db.Members.FirstOrDefault(m => m.Email == User.Identity!.Name);
         if (m == null) return RedirectToAction("Index", "Home");
 
         var vm = new UpdateProfileVM
@@ -297,7 +297,7 @@ public class AccountController(DB db,
     [HttpPost]
     public IActionResult ResetPassword(ResetPasswordVM vm)
     {
-        var u = db.Users.Find(vm.Email);
+        var u = db.Users.FirstOrDefault(u => u.Email == vm.Email);
 
         if (u == null)
         {
@@ -330,7 +330,7 @@ public class AccountController(DB db,
 
         if (model == null)
         {
-            return RedirectToAction("Admin", "Home");
+            return RedirectToAction("UserManagement", "Admin");
         }
 
         return View(model);
@@ -348,7 +348,7 @@ public class AccountController(DB db,
             db.SaveChanges();
             TempData["Info"] = $"User {u.Name} has been blocked.";
         }
-        return RedirectToAction("Admin", "Home");
+        return RedirectToAction("UserManagement", "Admin");
     }
 
     // POST: Account/Unblock
@@ -364,6 +364,6 @@ public class AccountController(DB db,
             TempData["Info"] = $"User {u.Name} has been unblocked.";
         }
 
-        return RedirectToAction("Admin", "Home");
+        return RedirectToAction("UserManagement", "Admin");
     }
 }

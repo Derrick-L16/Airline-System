@@ -249,6 +249,11 @@ label > * {
 
 /* Photo Upload --------------------------------------------------------------- */
 
+.upload {
+    display: inline-block;
+    cursor: pointer;
+}
+
 .upload img {
     display: block;
     border: 1px solid #333;
@@ -256,6 +261,27 @@ label > * {
     height: 200px;
     object-fit: cover;
     cursor: pointer;
+}
+
+.upload.dragover img {
+    border: 2px dashed #007bff !important;
+    opacity: 0.7;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+/* Webcam */
+.camera-dialog {
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #999;
+    text-align: center;
+}
+
+.camera-video {
+    object-fit: cover;
+    border: 1px solid #333;
+    border-radius: 5px;
 }
 
 /* Badge ---------------------------------------------------------------------- */
