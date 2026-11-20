@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSqlServer<DB>($@"
     Data Source=(LocalDB)\MSSQLLocalDB;
-    AttachDbFilename={builder.Environment.ContentRootPath}\AirlineDB.mdf;
+    AttachDbFilename={builder.Environment.ContentRootPath}\DB.mdf;
     Database=AirlineDB;
 ");
 builder.Services.AddScoped<Helper>();
