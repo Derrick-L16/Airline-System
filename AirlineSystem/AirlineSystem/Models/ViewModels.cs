@@ -152,3 +152,22 @@ public class CreateFlightVM
     [DisplayName("Base Price (RM)")]
     public decimal BasePrice { get; set; }
 }
+
+public class AdminChatThreadVM
+{
+    public int MemberId { get; set; }
+    public string MemberName { get; set; }
+    public string MemberEmail { get; set; }
+    public string PhotoURL { get; set; }
+    public string LastMessage { get; set; }
+    public DateTime LastSentAt { get; set; }
+    public bool LastFromAdmin { get; set; }
+}
+
+public class AdminQueriesVM
+{
+    public List<AdminChatThreadVM> Threads { get; set; } = [];
+    public int? SelectedMemberId { get; set; }
+    public Member SelectedMember { get; set; }
+    public List<ChatMessage> Messages { get; set; } = [];
+}

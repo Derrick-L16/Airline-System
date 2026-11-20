@@ -114,6 +114,43 @@ namespace AirlineSystem.Migrations
                     b.ToTable("BookingPassengers");
                 });
 
+            modelBuilder.Entity("AirlineSystem.Models.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsFromAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("ChatMessages");
+                });
+
             modelBuilder.Entity("AirlineSystem.Models.Country", b =>
                 {
                     b.Property<int>("CountryId")
@@ -460,6 +497,17 @@ namespace AirlineSystem.Migrations
                     b.Navigation("Passenger");
 
                     b.Navigation("Seat");
+                });
+
+            modelBuilder.Entity("AirlineSystem.Models.ChatMessage", b =>
+                {
+                    b.HasOne("AirlineSystem.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("AirlineSystem.Models.Flight", b =>

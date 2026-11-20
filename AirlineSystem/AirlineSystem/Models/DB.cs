@@ -66,6 +66,12 @@ public class DB(DbContextOptions options) : DbContext(options)
             .HasOne(b => b.Payment)
             .WithOne(p => p.Booking)
             .HasForeignKey<Payment>(p => p.BookingId);
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(cm => cm.Member)
+            .WithMany()
+            .HasForeignKey(cm => cm.MemberId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
     // DB Sets
     public DbSet<User> Users { get; set; }
@@ -81,6 +87,7 @@ public class DB(DbContextOptions options) : DbContext(options)
     public DbSet<Meal> Meals { get; set; }
     public DbSet<Airport> Airports { get; set; }
     public DbSet<Country> Countries { get; set; }
+    public DbSet<ChatMessage> ChatMessages { get; set; }
 
 }
 
@@ -282,6 +289,27 @@ public class Payment
     public DateTime PaymentDate { get; set; }
 
     public Booking Booking { get; set; }
+}
+
+public class ChatMessage
+{
+    public int Id { get; set; }
+
+    public int MemberId { get; set; }
+
+    public int SenderId { get; set; }
+
+    [MaxLength(100)]
+    public string SenderName { get; set; }
+
+    public bool IsFromAdmin { get; set; }
+
+    [MaxLength(2000)]
+    public string Message { get; set; }
+
+    public DateTime SentAt { get; set; } = DateTime.Now;
+
+    public Member Member { get; set; }
 }
 
 
