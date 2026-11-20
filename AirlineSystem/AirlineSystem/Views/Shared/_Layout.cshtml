@@ -31,10 +31,13 @@
         @* Member photo *@
         @if (User.IsInRole("Member"))
         {
-            var photoURL = db.Members.FirstOrDefault(m => m.Email == User.Identity.Name)!.PhotoURL;
-            <a href="/Account/UpdateProfile" title="Update Profile">
-                <img src="/photos/@photoURL">
-            </a>
+            var member = db.Members.FirstOrDefault(m => m.Email == User.Identity!.Name);
+            if (member is not null && !string.IsNullOrWhiteSpace(member.PhotoURL))
+            {
+                <a href="/Account/UpdateProfile" title="Update Profile">
+                    <img src="/photos/@member.PhotoURL" alt="Profile photo">
+                </a>
+            }
         }
     </header>
 

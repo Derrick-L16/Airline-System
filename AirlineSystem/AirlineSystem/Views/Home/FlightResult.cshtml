@@ -1,5 +1,35 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model FlightSearchResultVM
 @{
+    ViewBag.Title = "Available Flights";
 }
+
+<div class="container mt-5">
+    <h1>Available Flights</h1>
+
+    @if (!Model.Flights.Any())
+    {
+        <p>No flights were found for the selected route and travel date.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr><th>Flight</th><th>Route</th><th>Departure</th><th>Arrival</th><th>Price</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var flight in Model.Flights)
+                {
+                    <tr>
+                        <td>@flight.FlightCompany.CompanyName @flight.FlightNumber</td>
+                        <td>@flight.DepartureAirport.AirportName → @flight.ArrivalAirport.AirportName</td>
+                        <td>@flight.DepartureTime.ToString("g")</td>
+                        <td>@flight.ArrivalTime.ToString("g")</td>
+                        <td>RM @flight.BasePrice.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a asp-action="Index" class="btn btn-secondary">Change search</a>
+</div>

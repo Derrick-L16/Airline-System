@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace AirlineSystem.Controllers;
 
@@ -10,7 +11,31 @@ public class HomeController(DB db,
     // GET: Home/Index
     public IActionResult Index()
     {
-        return View();
+        return View(CreateFlightSearchVM());
+    }
+
+    [HttpGet]
+    public IActionResult SearchFlights(FlightSearchVM vm)
+    {
+        ValidateFlightSearch(vm);
+        if (!ModelState.IsValid)
+        {
+            PopulateFlightSearchLists(vm);
+            return View("Index", vm);
+        }
+
+        var travelDate = vm.TravelDate!.Value.ToDateTime(TimeOnly.MinValue).Date;
+        var flights = db.Flights
+            .Include(f => f.DepartureAirport).ThenInclude(a => a.Country)
+            .Include(f => f.ArrivalAirport).ThenInclude(a => a.Country)
+            .Include(f => f.FlightCompany)
+            .Where(f => f.DepartureAirportId == vm.DepartureAirportId
+                     && f.ArrivalAirportId == vm.DestinationAirportId
+                     && f.DepartureTime.Date == travelDate)
+            .OrderBy(f => f.DepartureTime)
+            .ToList();
+
+        return View("FlightResult", new FlightSearchResultVM { Search = vm, Flights = flights });
     }
 
     // GET: Home/Both
@@ -88,6 +113,31 @@ public class HomeController(DB db,
             .OrderBy(c => c.CompanyName)
             .Select(c => new SelectListItem($"{c.CompanyName} (ID: {c.FlightCompanyId})", c.FlightCompanyId.ToString()))
             .ToList();
+    }
+
+    private FlightSearchVM CreateFlightSearchVM()
+    {
+        var vm = new FlightSearchVM();
+        PopulateFlightSearchLists(vm);
+        return vm;
+    }
+
+    private void PopulateFlightSearchLists(FlightSearchVM vm)
+    {
+        vm.Countries = db.Countries.OrderBy(c => c.CountryName)
+            .Select(c => new CountryOptionVM(c.CountryId, c.CountryName, c.CountryCode)).ToList();
+        vm.Airports = db.Airports.OrderBy(a => a.AirportName)
+            .Select(a => new AirportOptionVM(a.AirportId, a.AirportName, a.CountryId)).ToList();
+    }
+
+    private void ValidateFlightSearch(FlightSearchVM vm)
+    {
+        if (vm.DepartureAirportId > 0 && !db.Airports.Any(a => a.AirportId == vm.DepartureAirportId && a.CountryId == vm.DepartureCountryId))
+            ModelState.AddModelError(nameof(vm.DepartureAirportId), "Select an airport in the departure country.");
+        if (vm.DestinationAirportId > 0 && !db.Airports.Any(a => a.AirportId == vm.DestinationAirportId && a.CountryId == vm.DestinationCountryId))
+            ModelState.AddModelError(nameof(vm.DestinationAirportId), "Select an airport in the destination country.");
+        if (vm.DepartureAirportId > 0 && vm.DepartureAirportId == vm.DestinationAirportId)
+            ModelState.AddModelError(nameof(vm.DestinationAirportId), "Destination airport must be different from the departure airport.");
     }
 
 

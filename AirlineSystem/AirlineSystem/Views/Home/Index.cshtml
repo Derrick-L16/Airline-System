@@ -1,58 +1,72 @@
-﻿@{
+@model FlightSearchVM
+@{
     ViewBag.Title = "Find Your Flight";
 }
 
 <div class="container mt-5">
-
     <p>Search for available flights to your destination.</p>
-
-    <form asp-controller="Home"
-          asp-action="SearchFlights"
-          method="get">
-
+    <form asp-controller="Home" asp-action="SearchFlights" method="get">
         <div class="mb-3">
-            <label>Departure Country</label>
-            <input type="text"
-                   name="departureCountry"
-                   class="form-control"
-                   placeholder="e.g. Malaysia"
-                   required />
+            <label asp-for="DepartureCountryId"></label>
+            <select asp-for="DepartureCountryId" class="form-select country-select" data-airport-select="departure-airport">
+                <option value="">Select departure country</option>
+                @foreach (var country in Model.Countries) { <option value="@country.CountryId">@country.CountryName (@country.CountryCode)</option> }
+            </select>
+            <span asp-validation-for="DepartureCountryId" class="text-danger"></span>
         </div>
-
         <div class="mb-3">
-            <label>Destination</label>
-            <input type="text"
-                   name="destination"
-                   class="form-control"
-                   placeholder="e.g. Japan"
-                   required />
+            <label asp-for="DepartureAirportId"></label>
+            <select asp-for="DepartureAirportId" id="departure-airport" class="form-select airport-select" disabled>
+                <option value="">Select a departure country first</option>
+                @foreach (var airport in Model.Airports) { <option value="@airport.AirportId" data-country-id="@airport.CountryId" hidden>@airport.AirportName</option> }
+            </select>
+            <span asp-validation-for="DepartureAirportId" class="text-danger"></span>
         </div>
-
         <div class="mb-3">
-            <label>Travel Date</label>
-            <input type="date"
-                   name="travelDate"
-                   class="form-control"
-                   required />
+            <label asp-for="DestinationCountryId"></label>
+            <select asp-for="DestinationCountryId" class="form-select country-select" data-airport-select="destination-airport">
+                <option value="">Select destination country</option>
+                @foreach (var country in Model.Countries) { <option value="@country.CountryId">@country.CountryName (@country.CountryCode)</option> }
+            </select>
+            <span asp-validation-for="DestinationCountryId" class="text-danger"></span>
         </div>
-
         <div class="mb-3">
-            <label>Number of Passengers</label>
-            <input type="number"
-                   name="pax"
-                   class="form-control"
-                   min="1"
-                   max="9"
-                   value="1"
-                   required />
+            <label asp-for="DestinationAirportId"></label>
+            <select asp-for="DestinationAirportId" id="destination-airport" class="form-select airport-select" disabled>
+                <option value="">Select a destination country first</option>
+                @foreach (var airport in Model.Airports) { <option value="@airport.AirportId" data-country-id="@airport.CountryId" hidden>@airport.AirportName</option> }
+            </select>
+            <span asp-validation-for="DestinationAirportId" class="text-danger"></span>
         </div>
-
-        <button type="submit" class="btn btn-primary">
-            Search Flights
-        </button>
-
-        <a class="btn" href="/Home/CreateFlight">Create Flight</a>
-
+        <div class="mb-3">
+            <label asp-for="TravelDate"></label>
+            <input asp-for="TravelDate" class="form-control" />
+            <span asp-validation-for="TravelDate" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Pax"></label>
+            <input asp-for="Pax" class="form-control" min="1" max="9" />
+            <span asp-validation-for="Pax" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Search Flights</button>
+        <a class="btn" asp-action="CreateFlight">Create Flight</a>
     </form>
-
 </div>
+
+@section foot {
+    <script>
+        document.querySelectorAll('.country-select').forEach(countrySelect => {
+            const airportSelect = document.getElementById(countrySelect.dataset.airportSelect);
+            const placeholder = airportSelect.options[0];
+            function filterAirports() {
+                const countryId = countrySelect.value;
+                airportSelect.value = '';
+                airportSelect.disabled = !countryId;
+                placeholder.text = countryId ? 'Select an airport' : 'Select a country first';
+                Array.from(airportSelect.options).slice(1).forEach(option => option.hidden = option.dataset.countryId !== countryId);
+            }
+            countrySelect.addEventListener('change', filterAirports);
+            filterAirports();
+        });
+    </script>
+}

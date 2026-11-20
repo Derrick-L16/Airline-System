@@ -153,6 +153,46 @@ public class CreateFlightVM
     public decimal BasePrice { get; set; }
 }
 
+public class FlightSearchVM
+{
+    [Range(1, int.MaxValue, ErrorMessage = "Select a departure country.")]
+    [DisplayName("Departure Country")]
+    public int DepartureCountryId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a departure airport.")]
+    [DisplayName("Departure Airport")]
+    public int DepartureAirportId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a destination country.")]
+    [DisplayName("Destination Country")]
+    public int DestinationCountryId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a destination airport.")]
+    [DisplayName("Destination Airport")]
+    public int DestinationAirportId { get; set; }
+
+    [Required]
+    [DataType(DataType.Date)]
+    [DisplayName("Travel Date")]
+    public DateOnly? TravelDate { get; set; }
+
+    [Range(1, 9)]
+    [DisplayName("Number of Passengers")]
+    public int Pax { get; set; } = 1;
+
+    public List<CountryOptionVM> Countries { get; set; } = [];
+    public List<AirportOptionVM> Airports { get; set; } = [];
+}
+
+public record CountryOptionVM(int CountryId, string CountryName, string CountryCode);
+public record AirportOptionVM(int AirportId, string AirportName, int CountryId);
+
+public class FlightSearchResultVM
+{
+    public FlightSearchVM Search { get; set; } = new();
+    public List<Flight> Flights { get; set; } = [];
+}
+
 public class AdminChatThreadVM
 {
     public int MemberId { get; set; }
