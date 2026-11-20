@@ -1,13 +1,14 @@
 global using AirlineSystem.Models;
 global using AirlineSystem;
+global using AirlineSystem.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 builder.Services.AddSqlServer<DB>($@"
     Data Source=(LocalDB)\MSSQLLocalDB;
     AttachDbFilename={builder.Environment.ContentRootPath}\DB.mdf;
-    Database=AirlineDB;
 ");
 builder.Services.AddScoped<Helper>();
 
@@ -67,5 +68,6 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.MapHub<ChatHub>("/chatHub");
 app.MapDefaultControllerRoute();
 app.Run();

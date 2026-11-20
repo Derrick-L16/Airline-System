@@ -49,11 +49,13 @@
         @if (User.IsInRole("Member"))
         {
             <a href="/Home/Orders">Orders</a>
+            <a href="/Support">Customer Support</a>
         }
         @if (User.IsInRole("Admin"))
         {
             <a href="/Home/Admin">Admin</a>
             <a href="/Home/CreateFlight">Create Flight</a>
+            <a href="/Admin/Queries">Reply Queries</a>
         }
 
         <div></div>

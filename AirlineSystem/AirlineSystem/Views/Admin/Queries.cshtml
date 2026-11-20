@@ -1,0 +1,547 @@
+@model AdminQueriesVM
+@{
+    ViewBag.Title = "Customer Queries Dashboard";
+}
+
+<div class="queries-layout">
+    <!-- Left Panel: Threads List -->
+    <div class="threads-panel">
+        <div class="panel-header">
+            <h3>Customer Inquiries</h3>
+            <span class="badge" id="threadCountBadge">@Model.Threads.Count active</span>
+        </div>
+
+        <div class="threads-list" id="threadsList">
+            @if (Model.Threads.Count == 0)
+            {
+                <div class="no-threads" id="noThreadsMsg">
+                    No customer queries yet. Messages sent by members will show up here automatically.
+                </div>
+            }
+            else
+            {
+                @foreach (var t in Model.Threads)
+                {
+                    var isSelected = Model.SelectedMemberId == t.MemberId;
+                    <div class="thread-item @(isSelected ? "active" : "")" 
+                         id="thread-@t.MemberId" 
+                         onclick="selectThread(@t.MemberId, '@Html.Raw(t.MemberName.Replace("'", "\\'"))', '@t.MemberEmail', '@t.PhotoURL')">
+                        <div class="avatar">
+                            @if (!string.IsNullOrEmpty(t.PhotoURL))
+                            {
+                                <img src="/photos/@t.PhotoURL" alt="@t.MemberName" />
+                            }
+                            else
+                            {
+                                <div class="avatar-fallback">@t.MemberName.Substring(0, 1).ToUpper()</div>
+                            }
+                        </div>
+                        <div class="thread-info">
+                            <div class="thread-title">
+                                <span class="name">@t.MemberName</span>
+                                <span class="time" id="time-@t.MemberId">@t.LastSentAt.ToString("g")</span>
+                            </div>
+                            <div class="thread-preview" id="preview-@t.MemberId">
+                                @(t.LastFromAdmin ? "You: " : "")@t.LastMessage
+                            </div>
+                            <div class="thread-status">
+                                <span class="status-pill @(t.LastFromAdmin ? "replied" : "pending")" id="pill-@t.MemberId">
+                                    @(t.LastFromAdmin ? "Replied" : "Awaiting Reply")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Right Panel: Active Chat Box -->
+    <div class="chat-panel">
+        <div class="chat-header" id="chatHeader">
+            @if (Model.SelectedMember != null)
+            {
+                <div class="member-header-info">
+                    <div class="avatar">
+                        @if (!string.IsNullOrEmpty(Model.SelectedMember.PhotoURL))
+                        {
+                            <img src="/photos/@Model.SelectedMember.PhotoURL" id="activeAvatar" />
+                        }
+                        else
+                        {
+                            <div class="avatar-fallback" id="activeAvatarFallback">@Model.SelectedMember.Name.Substring(0, 1).ToUpper()</div>
+                        }
+                    </div>
+                    <div>
+                        <h4 id="activeMemberName">@Model.SelectedMember.Name</h4>
+                        <small id="activeMemberEmail">@Model.SelectedMember.Email</small>
+                    </div>
+                </div>
+                <div class="live-indicator">
+                    <span class="dot"></span> Live Sync Across All Admins
+                </div>
+            }
+            else
+            {
+                <div class="member-header-info">
+                    <h4 id="activeMemberName">Select a conversation</h4>
+                </div>
+            }
+        </div>
+
+        <div class="messages-container" id="adminMessagesBox">
+            @if (Model.SelectedMember == null)
+            {
+                <div class="no-selection" id="noSelectionMsg">
+                    <p style="font-size: 32px; margin: 0 0 10px;">📩</p>
+                    <b>Select a conversation from the left to view and reply.</b>
+                </div>
+            }
+            else if (Model.Messages.Count == 0)
+            {
+                <div class="no-selection" id="noMessagesMsg">
+                    <b>No messages in this conversation yet.</b>
+                </div>
+            }
+            else
+            {
+                @foreach (var m in Model.Messages)
+                {
+                    <div class="msg-row @(m.IsFromAdmin ? "admin-side" : "member-side")">
+                        <div class="msg-bubble @(m.IsFromAdmin ? "bubble-admin" : "bubble-member")">
+                            <div class="text">@m.Message</div>
+                            <div class="meta">
+                                <b>@(m.IsFromAdmin ? m.SenderName + " (Admin)" : m.SenderName)</b> &middot; @m.SentAt.ToString("g")
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="reply-bar" id="replyBar" style="@(Model.SelectedMemberId == null ? "display: none;" : "")">
+            <input type="text" id="adminReplyInput" placeholder="Type a reply to this member..." autocomplete="off" maxlength="2000" />
+            <button type="button" id="adminSendBtn">Send Reply</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .queries-layout {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        height: 650px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        margin: 15px 0;
+    }
+
+    /* Left Panel */
+    .threads-panel {
+        background: #f8f9fa;
+        border-right: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-header {
+        padding: 15px 16px;
+        background: #e9ecef;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .panel-header h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #333;
+    }
+    .badge {
+        font-size: 12px;
+        background: #007bff;
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+    .threads-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+    .thread-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .thread-item:hover {
+        background: #edf2f7;
+    }
+    .thread-item.active {
+        background: #e3f2fd;
+        border-left: 4px solid #007bff;
+    }
+    .avatar img, .avatar-fallback {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .avatar-fallback {
+        background: #007bff;
+        color: #fff;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    .thread-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .thread-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+    .thread-title .name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #212529;
+    }
+    .thread-title .time {
+        font-size: 11px;
+        color: #888;
+    }
+    .thread-preview {
+        font-size: 13px;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 3px;
+    }
+    .thread-status {
+        margin-top: 4px;
+    }
+    .status-pill {
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 8px;
+        text-transform: uppercase;
+    }
+    .status-pill.pending {
+        background: #ffebee;
+        color: #d32f2f;
+        border: 1px solid #ffcdd2;
+    }
+    .status-pill.replied {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #c8e6c9;
+    }
+    .no-threads {
+        padding: 30px 20px;
+        text-align: center;
+        color: #888;
+        font-size: 14px;
+    }
+
+    /* Right Panel */
+    .chat-panel {
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+    }
+    .chat-header {
+        padding: 12px 20px;
+        background: #2b3a4a;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .member-header-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .member-header-info h4 {
+        margin: 0;
+        font-size: 16px;
+    }
+    .member-header-info small {
+        opacity: 0.8;
+    }
+    .live-indicator {
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,255,255,0.1);
+        padding: 4px 10px;
+        border-radius: 12px;
+    }
+    .live-indicator .dot {
+        width: 8px;
+        height: 8px;
+        background: #2ecc71;
+        border-radius: 50%;
+    }
+    .messages-container {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: #fdfdfd;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .no-selection {
+        margin: auto;
+        text-align: center;
+        color: #888;
+    }
+    .msg-row {
+        display: flex;
+        width: 100%;
+    }
+    .msg-row.member-side {
+        justify-content: flex-start;
+    }
+    .msg-row.admin-side {
+        justify-content: flex-end;
+    }
+    .msg-bubble {
+        max-width: 65%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    .bubble-member {
+        background: #f1f3f5;
+        color: #212529;
+        border: 1px solid #dee2e6;
+        border-bottom-left-radius: 2px;
+    }
+    .bubble-admin {
+        background: #007bff;
+        color: #fff;
+        border-bottom-right-radius: 2px;
+    }
+    .msg-bubble .meta {
+        font-size: 11px;
+        margin-top: 5px;
+        opacity: 0.85;
+    }
+    .bubble-admin .meta {
+        text-align: right;
+    }
+    .reply-bar {
+        padding: 12px 18px;
+        background: #fff;
+        border-top: 1px solid #ddd;
+        display: flex;
+        gap: 10px;
+    }
+    .reply-bar input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        outline: none;
+    }
+    .reply-bar input:focus {
+        border-color: #007bff;
+    }
+    .reply-bar button {
+        background: #28a745;
+        color: #fff;
+        border: none;
+        padding: 0 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .reply-bar button:hover {
+        background: #218838;
+    }
+</style>
+
+@section foot {
+    <script src="/js/signalr.min.js"></script>
+    <script>
+        let currentMemberId = @(Model.SelectedMemberId.HasValue ? Model.SelectedMemberId.Value.ToString() : "null");
+        const messagesBox = document.getElementById("adminMessagesBox");
+        const replyInput = document.getElementById("adminReplyInput");
+        const sendBtn = document.getElementById("adminSendBtn");
+        const replyBar = document.getElementById("replyBar");
+        const threadsList = document.getElementById("threadsList");
+
+        function scrollToBottom() {
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        }
+        scrollToBottom();
+
+        // 1. Setup SignalR
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+
+        // 2. Listen to messages sent by Members
+        connection.on("ReceiveMessageFromMember", function (msg) {
+            updateOrAddThread(msg.memberId, msg.senderName, msg.message, msg.sentAt, false);
+
+            // If currently viewing this member's chat, append the message directly
+            if (currentMemberId === msg.memberId) {
+                appendBubble(msg.message, msg.senderName, msg.sentAt, false);
+            }
+        });
+
+        // 3. Listen to replies sent by ANY Admin
+        connection.on("ReceiveAdminReply", function (msg) {
+            updateOrAddThread(msg.memberId, msg.senderName, msg.message, msg.sentAt, true);
+
+            // If currently viewing this member's chat, append the reply bubble
+            if (currentMemberId === msg.memberId) {
+                appendBubble(msg.message, msg.senderName + " (Admin)", msg.sentAt, true);
+            }
+        });
+
+        connection.start().then(function () {
+            console.log("Admin connected to SignalR ChatHub (Admins Group)");
+        }).catch(function (err) {
+            console.error("SignalR Connection Error: ", err.toString());
+        });
+
+        // 4. Append message bubble to active chat window
+        function appendBubble(text, sender, time, isAdmin) {
+            const noSel = document.getElementById("noSelectionMsg");
+            if (noSel) noSel.remove();
+            const noMsg = document.getElementById("noMessagesMsg");
+            if (noMsg) noMsg.remove();
+
+            const row = document.createElement("div");
+            row.className = "msg-row " + (isAdmin ? "admin-side" : "member-side");
+
+            const bubble = document.createElement("div");
+            bubble.className = "msg-bubble " + (isAdmin ? "bubble-admin" : "bubble-member");
+
+            const textDiv = document.createElement("div");
+            textDiv.className = "text";
+            textDiv.textContent = text;
+
+            const metaDiv = document.createElement("div");
+            metaDiv.className = "meta";
+            metaDiv.innerHTML = "<b>" + escapeHtml(sender) + "</b> &middot; " + escapeHtml(time);
+
+            bubble.appendChild(textDiv);
+            bubble.appendChild(metaDiv);
+            row.appendChild(bubble);
+            messagesBox.appendChild(row);
+            scrollToBottom();
+        }
+
+        // 5. Update left sidebar thread snippet & move it to top
+        function updateOrAddThread(memberId, memberName, message, sentAt, isAdmin) {
+            let threadEl = document.getElementById("thread-" + memberId);
+            const previewText = (isAdmin ? "You: " : "") + message;
+
+            if (threadEl) {
+                // Update time, snippet, and status
+                const timeEl = document.getElementById("time-" + memberId);
+                if (timeEl) timeEl.textContent = sentAt;
+
+                const prevEl = document.getElementById("preview-" + memberId);
+                if (prevEl) prevEl.textContent = previewText;
+
+                const pillEl = document.getElementById("pill-" + memberId);
+                if (pillEl) {
+                    pillEl.className = "status-pill " + (isAdmin ? "replied" : "pending");
+                    pillEl.textContent = isAdmin ? "Replied" : "Awaiting Reply";
+                }
+
+                // Move thread to top of list
+                threadsList.prepend(threadEl);
+            } else {
+                // Thread not in list yet, reload list or create element
+                location.reload();
+            }
+        }
+
+        // 6. Select a thread when clicked
+        function selectThread(memberId, memberName, memberEmail, photoURL) {
+            currentMemberId = memberId;
+
+            // Highlight in sidebar
+            document.querySelectorAll(".thread-item").forEach(el => el.classList.remove("active"));
+            const currentItem = document.getElementById("thread-" + memberId);
+            if (currentItem) currentItem.classList.add("active");
+
+            // Update header
+            document.getElementById("activeMemberName").textContent = memberName;
+            document.getElementById("activeMemberEmail").textContent = memberEmail;
+            replyBar.style.display = "flex";
+
+            // Fetch messages via AJAX
+            fetch("/Admin/GetMessages?memberId=" + memberId)
+                .then(res => res.json())
+                .then(data => {
+                    messagesBox.innerHTML = "";
+                    if (!data.messages || data.messages.length === 0) {
+                        messagesBox.innerHTML = '<div class="no-selection" id="noMessagesMsg"><b>No messages in this conversation yet.</b></div>';
+                    } else {
+                        data.messages.forEach(m => {
+                            appendBubble(m.message, m.isFromAdmin ? m.senderName + " (Admin)" : m.senderName, m.sentAt, m.isFromAdmin);
+                        });
+                    }
+                    scrollToBottom();
+                    replyInput.focus();
+                })
+                .catch(err => console.error("Error fetching messages:", err));
+        }
+
+        // 7. Send Admin Reply
+        function sendReply() {
+            if (!currentMemberId) {
+                alert("Please select a customer thread first.");
+                return;
+            }
+
+            const text = replyInput.value.trim();
+            if (!text) return;
+
+            connection.invoke("SendReplyToMember", currentMemberId, text).then(function () {
+                replyInput.value = "";
+                replyInput.focus();
+            }).catch(function (err) {
+                console.error("Reply Error: ", err.toString());
+                alert("Failed to send reply: " + err.toString());
+            });
+        }
+
+        sendBtn.addEventListener("click", sendReply);
+        replyInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendReply();
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+}
