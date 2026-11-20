@@ -118,6 +118,7 @@ public class RecaptchaResult
 {
     public bool Success { get; set; }
 
+}
 public class CreateFlightVM
 {
     [Required]
