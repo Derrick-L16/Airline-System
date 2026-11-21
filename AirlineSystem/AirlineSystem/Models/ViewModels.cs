@@ -156,7 +156,7 @@ public class CreateFlightVM
 public class FlightSearchVM
 {
     [Range(1, int.MaxValue, ErrorMessage = "Select a departure country.")]
-    [DisplayName("Departure Country")]
+    [DisplayName("From")]
     public int DepartureCountryId { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Select a departure airport.")]
@@ -164,7 +164,7 @@ public class FlightSearchVM
     public int DepartureAirportId { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Select a destination country.")]
-    [DisplayName("Destination Country")]
+    [DisplayName("To")]
     public int DestinationCountryId { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Select a destination airport.")]

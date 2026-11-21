@@ -54,11 +54,59 @@ public class HomeController(DB db,
         return View();
     }
 
-
+    [Authorize(Roles = "Member")]
     public IActionResult CreateFlight()
     {
         PopulateFlightLists();
         return View(new CreateFlightVM());
+    }
+
+    [Authorize(Roles = "Member")]
+    public IActionResult AddAirport()
+    {
+        PopulateAirportCountries();
+        return View(new Airport());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Member")]
+    public IActionResult AddAirport(Airport airport)
+    {
+        Console.WriteLine("========== ADD AIRPORT ==========");
+        Console.WriteLine("Airport Name: " + airport.AirportName);
+        Console.WriteLine("Country ID: " + airport.CountryId);
+
+        var airportName = airport.AirportName?.Trim();
+
+        if (string.IsNullOrWhiteSpace(airportName))
+            ModelState.AddModelError(nameof(airport.AirportName),
+                "Airport name is required.");
+
+        if (!db.Countries.Any(c => c.CountryId == airport.CountryId))
+            ModelState.AddModelError(nameof(airport.CountryId),
+                "Please select a valid country.");
+
+        if (ModelState.IsValid)
+        {
+            db.Airports.Add(new Airport
+            {
+                AirportName = airportName!,
+                CountryId = airport.CountryId
+            });
+
+            db.SaveChanges();
+
+            Console.WriteLine("AIRPORT INSERTED SUCCESSFULLY");
+
+            TempData["Info"] = "Airport added successfully.";
+            return RedirectToAction(nameof(AddAirport));
+        }
+
+        Console.WriteLine("AIRPORT NOT INSERTED");
+
+        PopulateAirportCountries();
+        return View(airport);
     }
 
     [HttpPost]
@@ -112,6 +160,14 @@ public class HomeController(DB db,
         ViewBag.FlightCompanies = db.FlightCompanies
             .OrderBy(c => c.CompanyName)
             .Select(c => new SelectListItem($"{c.CompanyName} (ID: {c.FlightCompanyId})", c.FlightCompanyId.ToString()))
+            .ToList();
+    }
+
+    private void PopulateAirportCountries()
+    {
+        ViewBag.Countries = db.Countries
+            .OrderBy(c => c.CountryName)
+            .Select(c => new SelectListItem(c.CountryName, c.CountryId.ToString()))
             .ToList();
     }
 

@@ -1,0 +1,27 @@
+@model Airport
+
+@{
+    ViewBag.Title = "Admin | Add Airport";
+}
+
+<form class="form" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div class="form-title">Airport Details</div>
+
+    <label asp-for="AirportName">Airport name</label>
+    <input asp-for="AirportName" autofocus placeholder="e.g. Kuala Lumpur International Airport">
+    <span asp-validation-for="AirportName"></span>
+
+    <label asp-for="CountryId">Country name</label>
+    <select asp-for="CountryId" asp-items="ViewBag.Countries">
+        <option value="">-- Select country --</option>
+    </select>
+    <span asp-validation-for="CountryId"></span>
+
+    <section>
+        <button type="submit">Add Airport</button>
+        <button type="reset">Reset</button>
+    </section>
+</form>

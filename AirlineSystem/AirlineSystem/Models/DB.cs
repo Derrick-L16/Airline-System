@@ -241,11 +241,11 @@ public class Airport
     public int CountryId { get; set; }
 
     // Navigation properties
-    public Country Country { get; set; }
+    public Country? Country { get; set; }
 
-    public ICollection<Flight> DepartureFlights { get; set; }
+    public ICollection<Flight>? DepartureFlights { get; set; }
 
-    public ICollection<Flight> ArrivalFlights { get; set; }
+    public ICollection<Flight>? ArrivalFlights { get; set; }
 }
 
 public class Country
