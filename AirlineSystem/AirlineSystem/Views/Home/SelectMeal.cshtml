@@ -1,0 +1,8 @@
+@model MealSelectionVM
+<div class="container mt-5" id="booking-step">
+    <h2>Food and Beverage</h2>
+    <p>@Model.Flight.DepartureAirport.AirportName → @Model.Flight.ArrivalAirport.AirportName</p>
+    <p>Selected seats: <strong>@string.Join(", ", Model.SelectedSeats.Select(s => s.SeatNumber))</strong></p>
+    @if (!Model.Meals.Any()) { <p>No meal offerings have been added yet.</p> }
+    else { <div class="list-group">@foreach (var meal in Model.Meals) { <label class="list-group-item"><input type="checkbox" name="mealIds" value="@meal.MealId" /> <strong>@meal.MealName</strong> — @meal.Description (RM @meal.Price.ToString("N2"))</label> }</div> }
+</div>

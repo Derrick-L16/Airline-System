@@ -130,7 +130,7 @@ public class HomeController(DB db,
 
         if (ModelState.IsValid)
         {
-            db.Flights.Add(new Flight
+            var flight = new Flight
             {
                 FlightNumber = vm.FlightNumber.Trim(),
                 FlightCompanyId = vm.FlightCompanyId,
@@ -139,8 +139,10 @@ public class HomeController(DB db,
                 DepartureTime = vm.DepartureTime,
                 ArrivalTime = vm.ArrivalTime,
                 BasePrice = vm.BasePrice
-            });
+            };
+            db.Flights.Add(flight);
             db.SaveChanges();
+            EnsureFlightSeats(flight.FlightId);
 
             TempData["Info"] = "Flight created successfully.";
             return RedirectToAction(nameof(CreateFlight));
@@ -148,6 +150,56 @@ public class HomeController(DB db,
 
         PopulateFlightLists();
         return View(vm);
+    }
+
+    [Authorize(Roles = "Member")]
+    public IActionResult SelectSeat(int flightId, int pax)
+    {
+        var flight = db.Flights
+            .Include(f => f.FlightCompany)
+            .Include(f => f.DepartureAirport)
+            .Include(f => f.ArrivalAirport)
+            .FirstOrDefault(f => f.FlightId == flightId);
+
+        if (flight is null)
+            return NotFound();
+
+        if (pax is < 1 or > 9)
+            return BadRequest("The number of passengers must be between 1 and 9.");
+
+        EnsureFlightSeats(flightId);
+
+        return View(new SelectSeatVM
+        {
+            Flight = flight,
+            Pax = pax,
+            Seats = db.Seats.Where(s => s.FlightId == flightId)
+                .OrderBy(s => s.SeatNumber).ToList()
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Member")]
+    public IActionResult SelectMeals(int flightId, int pax, string selectedSeatIds)
+    {
+        var selectedIds = selectedSeatIds?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(id => int.TryParse(id, out var seatId) ? seatId : 0)
+            .Where(seatId => seatId > 0).Distinct().ToList() ?? [];
+        var flight = db.Flights.Include(f => f.FlightCompany).Include(f => f.DepartureAirport)
+            .Include(f => f.ArrivalAirport).FirstOrDefault(f => f.FlightId == flightId);
+        var seats = db.Seats.Where(s => selectedIds.Contains(s.SeatId) && s.FlightId == flightId)
+            .OrderBy(s => s.SeatNumber).ToList();
+
+        if (flight is null || pax is < 1 or > 9 || seats.Count != pax || seats.Any(s => !s.SeatAvailability))
+            return BadRequest("Select exactly the requested number of available seats.");
+
+        return PartialView("_MealSelection", new MealSelectionVM
+        {
+            Flight = flight,
+            SelectedSeats = seats,
+            Meals = db.Meals.OrderBy(m => m.MealName).ToList()
+        });
     }
 
     private void PopulateFlightLists()
@@ -169,6 +221,25 @@ public class HomeController(DB db,
             .OrderBy(c => c.CountryName)
             .Select(c => new SelectListItem(c.CountryName, c.CountryId.ToString()))
             .ToList();
+    }
+
+    private void EnsureFlightSeats(int flightId)
+    {
+        if (db.Seats.Any(s => s.FlightId == flightId)) return;
+
+        var seatNumbers = new[]
+        {
+            "A1", "A2", "B1", "B2", "C1", "C2",
+            "D1", "D2", "E1", "E2", "F1", "F2"
+        };
+
+        db.Seats.AddRange(seatNumbers.Select(number => new Seat
+        {
+            FlightId = flightId,
+            SeatNumber = number,
+            SeatAvailability = true
+        }));
+        db.SaveChanges();
     }
 
     private FlightSearchVM CreateFlightSearchVM()

@@ -193,6 +193,20 @@ public class FlightSearchResultVM
     public List<Flight> Flights { get; set; } = [];
 }
 
+public class SelectSeatVM
+{
+    public Flight Flight { get; set; } = null!;
+    public List<Seat> Seats { get; set; } = [];
+    public int Pax { get; set; }
+}
+
+public class MealSelectionVM
+{
+    public Flight Flight { get; set; } = null!;
+    public List<Seat> SelectedSeats { get; set; } = [];
+    public List<Meal> Meals { get; set; } = [];
+}
+
 public class AdminChatThreadVM
 {
     public int MemberId { get; set; }

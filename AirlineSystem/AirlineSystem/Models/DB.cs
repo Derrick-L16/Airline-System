@@ -215,6 +215,7 @@ public class Seat
 
     public int FlightId { get; set; }
     public string SeatNumber { get; set; }
+    public bool SeatAvailability { get; set; } = true;
 
     // Navigation properties
     public Flight Flight { get; set; }

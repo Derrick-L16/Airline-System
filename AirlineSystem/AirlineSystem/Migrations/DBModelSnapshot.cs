@@ -340,6 +340,9 @@ namespace AirlineSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("SeatAvailability")
+                        .HasColumnType("bit");
+
                     b.HasKey("SeatId");
 
                     b.HasIndex("FlightId");

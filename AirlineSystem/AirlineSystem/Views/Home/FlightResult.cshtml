@@ -14,7 +14,7 @@
     {
         <table class="table">
             <thead>
-                <tr><th>Flight</th><th>Route</th><th>Departure</th><th>Arrival</th><th>Price</th></tr>
+                <tr><th>Flight</th><th>Route</th><th>Departure</th><th>Arrival</th><th>Price</th><th></th></tr>
             </thead>
             <tbody>
                 @foreach (var flight in Model.Flights)
@@ -25,6 +25,12 @@
                         <td>@flight.DepartureTime.ToString("g")</td>
                         <td>@flight.ArrivalTime.ToString("g")</td>
                         <td>RM @flight.BasePrice.ToString("N2")</td>
+                        <td>
+                            @if (User.IsInRole("Member"))
+                            {
+                                <a class="btn btn-primary" asp-action="SelectSeat" asp-route-flightId="@flight.FlightId" asp-route-pax="@Model.Search.Pax">Book Flight</a>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>
