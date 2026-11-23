@@ -1,0 +1,64 @@
+@model AdminFlightTableVM
+
+@{
+    ViewBag.Title = "Admin | Manage Flights";
+}
+
+<p>@Model.TotalFlights flight@(Model.TotalFlights == 1 ? "" : "s") available.</p>
+
+@if (!Model.Flights.Any())
+{
+    <p>No flights have been created yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Flight</th>
+                <th>Departure</th>
+                <th>Destination</th>
+                <th>Travel Date</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var flight in Model.Flights)
+            {
+                <tr>
+                    <td>@flight.FlightCompany.CompanyName @flight.FlightNumber</td>
+                    <td>@flight.DepartureAirport.Country?.CountryName — @flight.DepartureAirport.AirportName</td>
+                    <td>@flight.ArrivalAirport.Country?.CountryName — @flight.ArrivalAirport.AirportName</td>
+                    <td>@flight.DepartureTime.ToString("dd MMM yyyy")</td>
+                    <td>RM @flight.BasePrice.ToString("N2")</td>
+                    <td><a class="btn" asp-action="AdminFlightDetail" asp-route-flightId="@flight.FlightId">Update</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <ul class="pager">
+        <li class="previous @(Model.Page <= 1 ? "disabled" : "")">
+            @if (Model.Page > 1)
+            {
+                <a asp-action="AdminFlightTable" asp-route-page="@(Model.Page - 1)">Previous</a>
+            }
+            else
+            {
+                <span>Previous</span>
+            }
+        </li>
+        <li><span>Page @Model.Page of @Model.PageCount</span></li>
+        <li class="next @(Model.Page >= Model.PageCount ? "disabled" : "")">
+            @if (Model.Page < Model.PageCount)
+            {
+                <a asp-action="AdminFlightTable" asp-route-page="@(Model.Page + 1)">Next</a>
+            }
+            else
+            {
+                <span>Next</span>
+            }
+        </li>
+    </ul>
+}

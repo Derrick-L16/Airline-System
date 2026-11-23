@@ -153,6 +153,53 @@ public class CreateFlightVM
     public decimal BasePrice { get; set; }
 }
 
+public class AdminFlightTableVM
+{
+    public List<Flight> Flights { get; set; } = [];
+    public int Page { get; set; }
+    public int PageCount { get; set; }
+    public int TotalFlights { get; set; }
+}
+
+public class AdminFlightDetailVM
+{
+    public int FlightId { get; set; }
+
+    [DisplayName("Flight Number")]
+    public string FlightNumber { get; set; } = "";
+
+    [DisplayName("Flight Company")]
+    public string FlightCompanyName { get; set; } = "";
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a departure country.")]
+    [DisplayName("Departure Country")]
+    public int DepartureCountryId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a departure airport.")]
+    [DisplayName("Departure Airport")]
+    public int DepartureAirportId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a destination country.")]
+    [DisplayName("Destination Country")]
+    public int DestinationCountryId { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Select a destination airport.")]
+    [DisplayName("Destination Airport")]
+    public int ArrivalAirportId { get; set; }
+
+    [Required]
+    [DataType(DataType.Date)]
+    [DisplayName("Travel Date")]
+    public DateOnly? TravelDate { get; set; }
+
+    [Range(typeof(decimal), "0.01", "999999.99", ErrorMessage = "Base price must be greater than 0.")]
+    [DisplayName("Base Price (RM)")]
+    public decimal BasePrice { get; set; }
+
+    public List<CountryOptionVM> Countries { get; set; } = [];
+    public List<AirportOptionVM> Airports { get; set; } = [];
+}
+
 public class FlightSearchVM
 {
     [Range(1, int.MaxValue, ErrorMessage = "Select a departure country.")]

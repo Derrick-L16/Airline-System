@@ -1,0 +1,96 @@
+@model AdminFlightDetailVM
+
+@{
+    ViewBag.Title = "Admin | Flight Details";
+}
+
+<form class="form" method="post" asp-action="AdminFlightDetail">
+    <input asp-for="FlightId" type="hidden" />
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div class="form-title">Flight Details</div>
+    <label asp-for="FlightNumber"></label>
+    <input asp-for="FlightNumber" readonly />
+
+    <label asp-for="FlightCompanyName"></label>
+    <input asp-for="FlightCompanyName" readonly />
+
+    <div class="form-title">Route and Fare</div>
+    <label asp-for="DepartureCountryId"></label>
+    <select asp-for="DepartureCountryId" id="departure-country">
+        <option value="">-- Select departure country --</option>
+        @foreach (var country in Model.Countries)
+        {
+            <option value="@country.CountryId">@country.CountryName</option>
+        }
+    </select>
+    <span asp-validation-for="DepartureCountryId"></span>
+
+    <label asp-for="DepartureAirportId"></label>
+    <select asp-for="DepartureAirportId" id="departure-airport">
+        <option value="">-- Select departure airport --</option>
+        @foreach (var airport in Model.Airports)
+        {
+            <option value="@airport.AirportId" data-country-id="@airport.CountryId">@airport.AirportName</option>
+        }
+    </select>
+    <span asp-validation-for="DepartureAirportId"></span>
+
+    <label asp-for="DestinationCountryId"></label>
+    <select asp-for="DestinationCountryId" id="destination-country">
+        <option value="">-- Select destination country --</option>
+        @foreach (var country in Model.Countries)
+        {
+            <option value="@country.CountryId">@country.CountryName</option>
+        }
+    </select>
+    <span asp-validation-for="DestinationCountryId"></span>
+
+    <label asp-for="ArrivalAirportId"></label>
+    <select asp-for="ArrivalAirportId" id="destination-airport">
+        <option value="">-- Select destination airport --</option>
+        @foreach (var airport in Model.Airports)
+        {
+            <option value="@airport.AirportId" data-country-id="@airport.CountryId">@airport.AirportName</option>
+        }
+    </select>
+    <span asp-validation-for="ArrivalAirportId"></span>
+
+    <label asp-for="TravelDate"></label>
+    <input asp-for="TravelDate" type="date" />
+    <span asp-validation-for="TravelDate"></span>
+
+    <label asp-for="BasePrice"></label>
+    <input asp-for="BasePrice" type="number" min="0.01" step="0.01" />
+    <span asp-validation-for="BasePrice"></span>
+
+    <section>
+        <button type="submit">Confirm Update</button>
+        <a class="btn" asp-action="AdminFlightTable">Back to Flights</a>
+    </section>
+</form>
+
+<form method="post" asp-action="DeleteFlight" onsubmit="return confirm('Warning: deleting this flight permanently removes it and its related bookings. Do you want to continue?');">
+    <input type="hidden" name="flightId" value="@Model.FlightId" />
+    <button type="submit">Delete Flight</button>
+</form>
+
+@section foot {
+    <script>
+        function filterAirports(countrySelector, airportSelector) {
+            const country = document.querySelector(countrySelector);
+            const airport = document.querySelector(airportSelector);
+            const filter = () => {
+                for (const option of airport.options) {
+                    if (!option.value) continue;
+                    option.hidden = option.dataset.countryId !== country.value;
+                }
+                if (airport.selectedOptions[0]?.hidden) airport.value = '';
+            };
+            country.addEventListener('change', filter);
+            filter();
+        }
+        filterAirports('#departure-country', '#departure-airport');
+        filterAirports('#destination-country', '#destination-airport');
+    </script>
+}
