@@ -8,7 +8,7 @@ namespace AirlineSystem.Controllers;
 [Authorize]
 public class AdminController(DB db) : Controller
 {
-    private const int FlightsPerPage = 8;
+    private const int FlightsPerPage = 10;
 
     // GET: Admin/
     [Authorize(Roles = "Admin")]
@@ -159,7 +159,7 @@ public class AdminController(DB db) : Controller
     }
 
     // GET: Admin/AdminFlightTable?page=1
-    [Authorize(Roles = "Admin,Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult AdminFlightTable(int page = 1)
     {
         var totalFlights = db.Flights.Count();
@@ -189,7 +189,7 @@ public class AdminController(DB db) : Controller
     }
 
     // GET: Admin/AdminFlightDetail?flightId=1
-    [Authorize(Roles = "Admin,Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult AdminFlightDetail(int flightId)
     {
         var flight = db.Flights
@@ -203,7 +203,7 @@ public class AdminController(DB db) : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult AdminFlightDetail(AdminFlightDetailVM vm)
     {
         ValidateAdminFlight(vm);
@@ -233,7 +233,7 @@ public class AdminController(DB db) : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult DeleteFlight(int flightId)
     {
         var flight = db.Flights.FirstOrDefault(f => f.FlightId == flightId);

@@ -42,27 +42,22 @@
     </header>
 
     <nav>
-        <a href="/">Main</a>
-
-        @* Menu trimming *@
-        @if (User.Identity.IsAuthenticated)
-        {
-            
-        }
-        @if (User.IsInRole("Member"))
-        {
-            <a href="/Home/Orders">Orders</a>
-            <a href="/Support">Customer Support</a>
-        }
-        @if (User.IsInRole("Admin") || User.IsInRole("Member"))
-        {
-            <a href="/Home/CreateFlight">Create Flight</a>
-            <a href="/Admin/AdminFlightTable">Manage Flights</a>
-        }
         @if (User.IsInRole("Admin"))
         {
+            <a href="/Admin/AdminFlightTable">Main</a>
+            <a href="/Home/CreateFlight">Create Flight</a>
+            <a href="/Home/AddAirport">Add Airport</a>
             <a href="/Admin/UserManagement">User Management</a>
             <a href="/Admin/Queries">Reply Queries</a>
+        }
+        else
+        {
+            <a href="/">Main</a>
+            @if (User.IsInRole("Member"))
+            {
+                <a href="/Home/Orders">Orders</a>
+                <a href="/Support">Customer Support</a>
+            }
         }
 
         <div></div>
