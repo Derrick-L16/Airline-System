@@ -1,0 +1,159 @@
+@model PaymentVM
+@{
+    ViewBag.Title = "Payment - Stripe Checkout";
+}
+
+<div class="payment-container" style="max-width: 860px; margin: 30px auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: grid; grid-template-columns: 1fr 1.2fr;">
+    <!-- Left Column: Order Summary -->
+    <div style="background: #f7f9fa; padding: 35px 30px; border-right: 1px solid #e5e5e5; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 25px;">
+                <span style="font-size: 24px;">✈️</span>
+                <strong style="font-size: 20px; color: #2b3a4a;">DreaméJet</strong>
+            </div>
+
+            <div style="font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Amount to Pay</div>
+            <div style="font-size: 34px; font-weight: bold; color: #111; margin: 6px 0 25px;">
+                RM @Model.GrandTotal.ToString("N2")
+            </div>
+
+            <div style="border-top: 1px solid #e5e5e5; padding-top: 20px;">
+                <div style="font-size: 14px; font-weight: bold; color: #333; margin-bottom: 8px;">Flight Summary</div>
+                <div style="font-size: 14px; color: #555;">@Model.CompanyName &middot; @Model.FlightNumber</div>
+                <div style="font-size: 13px; color: #777; margin-top: 4px;">@Model.RouteSummary</div>
+                <div style="font-size: 13px; color: #007bff; margin-top: 4px;">@Model.DepartureTime.ToString("dd MMM yyyy, h:mm tt")</div>
+            </div>
+
+            <div style="border-top: 1px solid #e5e5e5; padding-top: 15px; margin-top: 15px; font-size: 13px; color: #555;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>Tickets (@Model.Pax pax):</span>
+                    <strong>RM @Model.TotalFlightFare.ToString("N2")</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>Meal Selection:</span>
+                    <span>@Model.SelectedMealName</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Meal Add-on total:</span>
+                    <strong>RM @Model.TotalMealFare.ToString("N2")</strong>
+                </div>
+            </div>
+        </div>
+
+        <div style="font-size: 12px; color: #999; margin-top: 25px; display: flex; align-items: center; gap: 6px;">
+            <span>🔒 Encrypted 256-bit SSL connection</span>
+        </div>
+    </div>
+
+    <!-- Right Column: Stripe Payment Form -->
+    <div style="padding: 35px 35px; background: #fff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="font-size: 18px; font-weight: 700; color: #333;">Pay with card</div>
+            <span style="background: #ffecb3; color: #ff8f00; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">
+                Stripe Test Mode
+            </span>
+        </div>
+
+        <!-- Stripe Mock Card Pill Helper -->
+        <div style="background: #eef2ff; border: 1px dashed #635bff; padding: 10px 14px; border-radius: 6px; font-size: 12px; color: #4f46e5; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span>💡 Test Card: <strong>4242 4242 4242 4242</strong></span>
+            <button type="button" id="fillTestCardBtn" style="background: #635bff; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">
+                Auto-fill
+            </button>
+        </div>
+
+        <form asp-action="ProcessPayment" method="post" id="stripePaymentForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="flightId" value="@Model.FlightId" />
+            <input type="hidden" name="pax" value="@Model.Pax" />
+            <input type="hidden" name="selectedSeatIds" value="@Model.SelectedSeatIds" />
+            <input type="hidden" name="selectedMealId" value="@(Model.SelectedMealId ?? 0)" />
+            <input type="hidden" name="grandTotal" value="@Model.GrandTotal" />
+
+            <!-- Card Number -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px;">Card Number</label>
+                <div style="position: relative;">
+                    <input type="text" id="cardNumber" required placeholder="4242 4242 4242 4242" maxlength="19" value="4242 4242 4242 4242"
+                           style="width: 100%; box-sizing: border-box; padding: 11px 40px 11px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; font-family: monospace; outline: none;" />
+                    <span style="position: absolute; right: 12px; top: 11px; font-size: 18px;">💳</span>
+                </div>
+            </div>
+
+            <!-- Expiry & CVC Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px;">Expiration</label>
+                    <input type="text" id="cardExpiry" required placeholder="MM / YY" maxlength="5" value="12/28"
+                           style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none;" />
+                </div>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px;">CVC</label>
+                    <input type="text" id="cardCvc" required placeholder="123" maxlength="4" value="123"
+                           style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none;" />
+                </div>
+            </div>
+
+            <!-- Cardholder Name -->
+            <div style="margin-bottom: 22px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px;">Cardholder Name</label>
+                <input type="text" id="cardholderName" required placeholder="Full Name on Card" value="@(User.Identity?.Name ?? "Cardholder")"
+                       style="width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none;" />
+            </div>
+
+            <!-- Pay Button -->
+            <button type="submit" id="paySubmitBtn"
+                    style="width: 100%; background: #635bff; color: #fff; border: none; padding: 14px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <span>🔒 Pay RM @Model.GrandTotal.ToString("N2")</span>
+            </button>
+
+            <!-- Loading Spinner (hidden initially) -->
+            <div id="paymentProcessing" style="display: none; text-align: center; margin-top: 15px; color: #635bff; font-weight: bold;">
+                <span style="display: inline-block; animation: spin 1s linear infinite; font-size: 18px;">⏳</span> Authorizing Stripe payment...
+            </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #aaa;">
+            Powered by <strong>stripe</strong>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    input:focus {
+        border-color: #635bff !important;
+        box-shadow: 0 0 0 2px rgba(99,91,255,0.15);
+    }
+    #paySubmitBtn:hover {
+        background: #4f46e5 !important;
+    }
+</style>
+
+@section foot {
+    <script>
+        const fillBtn = document.getElementById('fillTestCardBtn');
+        const cardNum = document.getElementById('cardNumber');
+        const cardExp = document.getElementById('cardExpiry');
+        const cardCvc = document.getElementById('cardCvc');
+        const payForm = document.getElementById('stripePaymentForm');
+        const payBtn = document.getElementById('paySubmitBtn');
+        const processing = document.getElementById('paymentProcessing');
+
+        fillBtn.addEventListener('click', function() {
+            cardNum.value = '4242 4242 4242 4242';
+            cardExp.value = '12/28';
+            cardCvc.value = '123';
+        });
+
+        payForm.addEventListener('submit', function(e) {
+            payBtn.disabled = true;
+            payBtn.style.opacity = '0.7';
+            payBtn.innerText = 'Processing...';
+            processing.style.display = 'block';
+        });
+    </script>
+}

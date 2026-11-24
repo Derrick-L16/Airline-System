@@ -14,7 +14,7 @@
             <div class="seat-column">@foreach (var seat in rightSeats) { if (seat.SeatAvailability) { <button type="button" class="seat available" data-id="@seat.SeatId">@seat.SeatNumber</button> } else { <button type="button" class="seat unavailable" disabled>@seat.SeatNumber</button> } }</div>
         </div></div>
         <p id="selected-seat" class="mt-3">Select @Model.Pax seat@(Model.Pax > 1 ? "s" : "") to continue.</p>
-        <button type="submit" id="continue-booking" class="btn btn-primary" disabled>Continue Booking</button><a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        <button type="submit" id="continue-booking" class="btn btn-primary" disabled>Continue to Meal Selection &rarr;</button> <a asp-action="Index" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 @section head { <style>

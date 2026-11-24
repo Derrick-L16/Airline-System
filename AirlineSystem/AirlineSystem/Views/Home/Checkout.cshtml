@@ -1,0 +1,141 @@
+@model CheckoutVM
+@{
+    ViewBag.Title = "Booking Checkout";
+}
+
+<div class="checkout-container" style="max-width: 900px; margin: 25px auto;">
+    <!-- Step Indicator -->
+    <div style="display: flex; justify-content: space-between; margin-bottom: 25px; padding: 0 10px;">
+        <span style="color: #6c757d;">1. Flight Search</span>
+        <span style="color: #6c757d;">2. Select Seats</span>
+        <span style="color: #6c757d;">3. Select Meals</span>
+        <strong style="color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 4px;">4. Checkout Review</strong>
+        <span style="color: #6c757d;">5. Payment</span>
+    </div>
+
+    <!-- 1. Flight Details On Top -->
+    <div class="card shadow-sm mb-4" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
+        <div style="background: #2b3a4a; color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="font-size: 24px;">✈️</span>
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; color: #fff;">@Model.Flight.FlightCompany.CompanyName &middot; @Model.Flight.FlightNumber</h3>
+                    <small style="opacity: 0.85;">Flight Itinerary Details</small>
+                </div>
+            </div>
+            <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; font-size: 13px;">
+                @Model.Pax Passenger@(Model.Pax > 1 ? "s" : "")
+            </span>
+        </div>
+
+        <div style="padding: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center; text-align: center; margin-bottom: 15px;">
+                <div style="text-align: left;">
+                    <div style="font-size: 12px; color: #888; text-transform: uppercase;">Departure</div>
+                    <strong style="font-size: 18px; color: #333;">@Model.Flight.DepartureAirport.AirportName</strong>
+                    <div style="font-size: 14px; color: #007bff; font-weight: bold; margin-top: 4px;">
+                        @Model.Flight.DepartureTime.ToString("ddd, dd MMM yyyy, h:mm tt")
+                    </div>
+                </div>
+
+                <div style="color: #888; font-size: 22px;">&rarr;</div>
+
+                <div style="text-align: right;">
+                    <div style="font-size: 12px; color: #888; text-transform: uppercase;">Destination</div>
+                    <strong style="font-size: 18px; color: #333;">@Model.Flight.ArrivalAirport.AirportName</strong>
+                    <div style="font-size: 14px; color: #28a745; font-weight: bold; margin-top: 4px;">
+                        @Model.Flight.ArrivalTime.ToString("ddd, dd MMM yyyy, h:mm tt")
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 10px 16px; border-radius: 6px; display: flex; justify-content: space-between; font-size: 14px; color: #555;">
+                <span>Base Flight Fare per seat: <strong>RM @Model.Flight.BasePrice.ToString("N2")</strong></span>
+                <span>Selected Seats: <strong>@string.Join(", ", Model.Passengers.Select(p => p.SeatNumber))</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Passenger Details At Bottom -->
+    <div class="card shadow-sm mb-4" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
+        <div style="background: #f1f3f5; padding: 14px 20px; border-bottom: 1px solid #ddd;">
+            <h3 style="margin: 0; font-size: 16px; color: #333;">👤 Passenger Breakdown &amp; Subtotals</h3>
+            <small style="color: #666;">Passenger document details are pre-filled for this reservation.</small>
+        </div>
+
+        <div style="padding: 20px;">
+            <table class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 0;">
+                <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 10px; text-align: left;">Passenger Name</th>
+                        <th style="padding: 10px; text-align: center;">Seat</th>
+                        <th style="padding: 10px; text-align: left;">Meal Preference</th>
+                        <th style="padding: 10px; text-align: right;">Flight Fare</th>
+                        <th style="padding: 10px; text-align: right;">Meal Price</th>
+                        <th style="padding: 10px; text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Passengers)
+                    {
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 12px 10px;">
+                                <strong>@p.Name</strong>
+                                <div style="font-size: 12px; color: #777;">
+                                    @p.Gender &middot; Passport: <code>@p.PassportNumber</code>
+                                </div>
+                            </td>
+                            <td style="padding: 12px 10px; text-align: center;">
+                                <span style="background: #2b3a4a; color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                                    @p.SeatNumber
+                                </span>
+                            </td>
+                            <td style="padding: 12px 10px;">
+                                <span style="color: #333;">@p.MealName</span>
+                            </td>
+                            <td style="padding: 12px 10px; text-align: right;">
+                                RM @p.FlightFare.ToString("N2")
+                            </td>
+                            <td style="padding: 12px 10px; text-align: right; color: @(p.MealPrice > 0 ? "#007bff" : "#6c757d");">
+                                @(p.MealPrice > 0 ? "RM " + p.MealPrice.ToString("N2") : "RM 0.00")
+                            </td>
+                            <td style="padding: 12px 10px; text-align: right; font-weight: bold; color: #28a745;">
+                                RM @p.Subtotal.ToString("N2")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 3. Grand Total Box & Payment Action -->
+    <div class="card shadow-sm" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div style="font-size: 14px; color: #555;">
+                <div>Total Flight Tickets (@Model.Pax pax): <strong>RM @Model.TotalFlightFare.ToString("N2")</strong></div>
+                <div style="margin-top: 4px;">Total Meal Add-ons: <strong>RM @Model.TotalMealFare.ToString("N2")</strong></div>
+                <div style="margin-top: 8px; font-size: 22px; color: #212529;">
+                    Grand Total: <strong style="color: #28a745; font-size: 28px;">RM @Model.GrandTotal.ToString("N2")</strong>
+                </div>
+            </div>
+
+            <form asp-action="Payment" method="post" style="margin: 0;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="flightId" value="@Model.Flight.FlightId" />
+                <input type="hidden" name="pax" value="@Model.Pax" />
+                <input type="hidden" name="selectedSeatIds" value="@Model.SelectedSeatIds" />
+                <input type="hidden" name="selectedMealId" value="@(Model.SelectedMealId ?? 0)" />
+
+                <div style="display: flex; gap: 12px;">
+                    <a href="/Home/SelectSeat?flightId=@Model.Flight.FlightId&pax=@Model.Pax" class="btn btn-secondary" style="background: #6c757d; color: #fff; padding: 14px 20px; border-radius: 6px; text-decoration: none; font-size: 15px; display: inline-flex; align-items: center;">
+                        &larr; Back
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg" style="background: #28a745; color: #fff; border: none; padding: 14px 32px; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(40,167,69,0.3);">
+                        Proceed to Payment 💳 &rarr;
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

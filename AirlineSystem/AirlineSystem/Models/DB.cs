@@ -162,6 +162,7 @@ public class Passenger
     public string Gender { get; set; }
     public string PassportNumber { get; set; }
     public DateTime PassportExpiryDate { get; set; }
+    public int NationalityCountryId { get; set; }
 
     // Navigation properties
     public Member Member { get; set; }

@@ -2,8 +2,10 @@ global using AirlineSystem.Models;
 global using AirlineSystem;
 global using AirlineSystem.Hubs;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 builder.Services.AddSqlServer<DB>($@"
@@ -61,6 +63,19 @@ using (var scope = app.Services.CreateScope())
                 CompanyName = companyName,
                 LogoUrl = "/images/favicon.png"
             });
+    }
+
+    var sampleMeals = new[]
+    {
+        ("Nasi Lemak Special", "Fragrant coconut rice with sambal, fried chicken, roasted peanuts, and boiled egg.", 20.00m),
+        ("Grilled Chicken Teriyaki", "Tender grilled chicken thigh served with Japanese steamed rice and vegetables.", 22.00m),
+        ("Vegetarian Pasta Primavera", "Al dente penne pasta tossed in herb tomato sauce with roasted bell peppers and zucchini.", 18.00m),
+        ("Beef Rendang with Fragrant Rice", "Slow-cooked Malaysian beef rendang infused with toasted coconut and lemongrass.", 25.00m)
+    };
+    foreach (var (mealName, desc, price) in sampleMeals)
+    {
+        if (!db.Meals.Any(m => m.MealName == mealName))
+            db.Meals.Add(new Meal { MealName = mealName, Description = desc, Price = price });
     }
 
     db.SaveChanges();

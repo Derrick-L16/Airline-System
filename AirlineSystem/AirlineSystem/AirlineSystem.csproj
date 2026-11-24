@@ -14,6 +14,7 @@
     </PackageReference>
     <PackageReference Include="SixLabors.ImageSharp" Version="3.2.0" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="10.6.0" />
+    <PackageReference Include="Stripe.net" Version="47.4.0" />
     <!-- Fix vulnerability -->
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
   </ItemGroup>

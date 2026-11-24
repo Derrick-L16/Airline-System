@@ -252,6 +252,61 @@ public class MealSelectionVM
     public Flight Flight { get; set; } = null!;
     public List<Seat> SelectedSeats { get; set; } = [];
     public List<Meal> Meals { get; set; } = [];
+    public int Pax { get; set; }
+    public string SelectedSeatIds { get; set; } = "";
+}
+
+public class CheckoutPassengerVM
+{
+    public int PassengerIndex { get; set; }
+    public string Name { get; set; } = "";
+    public string Gender { get; set; } = "Male";
+    public string PassportNumber { get; set; } = "";
+    public int SeatId { get; set; }
+    public string SeatNumber { get; set; } = "";
+    public int? MealId { get; set; }
+    public string MealName { get; set; } = "No In-Flight Meal";
+    public decimal MealPrice { get; set; }
+    public decimal FlightFare { get; set; }
+    public decimal Subtotal => FlightFare + MealPrice;
+}
+
+public class CheckoutVM
+{
+    public Flight Flight { get; set; } = null!;
+    public int Pax { get; set; }
+    public string SelectedSeatIds { get; set; } = "";
+    public int? SelectedMealId { get; set; }
+    public Meal? SelectedMeal { get; set; }
+    public List<CheckoutPassengerVM> Passengers { get; set; } = [];
+    public decimal TotalFlightFare => Passengers.Sum(p => p.FlightFare);
+    public decimal TotalMealFare => Passengers.Sum(p => p.MealPrice);
+    public decimal GrandTotal => Passengers.Sum(p => p.Subtotal);
+}
+
+public class PaymentVM
+{
+    public int FlightId { get; set; }
+    public string FlightNumber { get; set; } = "";
+    public string CompanyName { get; set; } = "";
+    public string RouteSummary { get; set; } = "";
+    public DateTime DepartureTime { get; set; }
+    public DateTime ArrivalTime { get; set; }
+    public int Pax { get; set; }
+    public string SelectedSeatIds { get; set; } = "";
+    public int? SelectedMealId { get; set; }
+    public string SelectedMealName { get; set; } = "No In-Flight Meal";
+    public decimal TotalFlightFare { get; set; }
+    public decimal TotalMealFare { get; set; }
+    public decimal GrandTotal { get; set; }
+    public List<CheckoutPassengerVM> Passengers { get; set; } = [];
+}
+
+public class BookingConfirmationVM
+{
+    public Booking Booking { get; set; } = null!;
+    public Payment Payment { get; set; } = null!;
+    public List<BookingPassenger> Passengers { get; set; } = [];
 }
 
 public class AdminChatThreadVM

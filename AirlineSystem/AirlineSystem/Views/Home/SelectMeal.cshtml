@@ -1,8 +1,75 @@
 @model MealSelectionVM
-<div class="container mt-5" id="booking-step">
-    <h2>Food and Beverage</h2>
-    <p>@Model.Flight.DepartureAirport.AirportName → @Model.Flight.ArrivalAirport.AirportName</p>
-    <p>Selected seats: <strong>@string.Join(", ", Model.SelectedSeats.Select(s => s.SeatNumber))</strong></p>
-    @if (!Model.Meals.Any()) { <p>No meal offerings have been added yet.</p> }
-    else { <div class="list-group">@foreach (var meal in Model.Meals) { <label class="list-group-item"><input type="checkbox" name="mealIds" value="@meal.MealId" /> <strong>@meal.MealName</strong> — @meal.Description (RM @meal.Price.ToString("N2"))</label> }</div> }
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm" style="max-width: 780px; margin: 0 auto; background: #fff; border: 1px solid #ccc; border-radius: 8px;">
+        <div style="border-bottom: 2px solid #2b3a4a; padding-bottom: 12px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #2b3a4a;">🍽️ Select In-Flight Meal</h2>
+            <div style="font-size: 15px; color: #555; margin-top: 6px;">
+                <strong>@Model.Flight.FlightCompany.CompanyName @Model.Flight.FlightNumber</strong> &middot; 
+                @Model.Flight.DepartureAirport.AirportName &rarr; @Model.Flight.ArrivalAirport.AirportName
+            </div>
+            <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span style="background: #e3f2fd; color: #0d47a1; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                    Seats: @string.Join(", ", Model.SelectedSeats.Select(s => s.SeatNumber))
+                </span>
+                <span style="background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                    Passengers: @Model.Pax
+                </span>
+            </div>
+        </div>
+
+        <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+            <em>Note: All @Model.Pax passenger(s) in this booking will be served the chosen meal preference.</em>
+        </p>
+
+        <form asp-action="Checkout" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="flightId" value="@Model.Flight.FlightId" />
+            <input type="hidden" name="pax" value="@Model.Pax" />
+            <input type="hidden" name="selectedSeatIds" value="@Model.SelectedSeatIds" />
+
+            <div class="meal-options" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                <!-- Option 1: No Meal -->
+                <label class="meal-card" style="display: flex; gap: 15px; padding: 14px 16px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s; align-items: center;">
+                    <input type="radio" name="selectedMealId" value="0" checked style="width: 18px; height: 18px; cursor: pointer;" />
+                    <div style="flex: 1;">
+                        <strong style="font-size: 15px; color: #333;">No In-Flight Meal</strong>
+                        <div style="font-size: 13px; color: #777;">Standard water service included. No additional charges.</div>
+                    </div>
+                    <span style="font-weight: bold; color: #28a745; font-size: 15px;">RM 0.00</span>
+                </label>
+
+                <!-- Available Meals from Database -->
+                @if (Model.Meals != null && Model.Meals.Any())
+                {
+                    @foreach (var meal in Model.Meals)
+                    {
+                        <label class="meal-card" style="display: flex; gap: 15px; padding: 14px 16px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s; align-items: center;">
+                            <input type="radio" name="selectedMealId" value="@meal.MealId" style="width: 18px; height: 18px; cursor: pointer;" />
+                            <div style="flex: 1;">
+                                <strong style="font-size: 15px; color: #333;">@meal.MealName</strong>
+                                <div style="font-size: 13px; color: #666; margin-top: 2px;">@meal.Description</div>
+                            </div>
+                            <span style="font-weight: bold; color: #007bff; font-size: 15px;">+ RM @meal.Price.ToString("N2") <small style="font-size: 11px; color: #777;">/pax</small></span>
+                        </label>
+                    }
+                }
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: center; border-top: 1px solid #eee; padding-top: 20px;">
+                <button type="submit" class="btn btn-primary" style="background: #28a745; color: #fff; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer;">
+                    Confirm Booking &amp; Proceed to Checkout &rarr;
+                </button>
+                <a href="/Home/SelectSeat?flightId=@Model.Flight.FlightId&pax=@Model.Pax" class="btn btn-secondary" style="background: #6c757d; color: #fff; padding: 12px 18px; border-radius: 6px; text-decoration: none; font-size: 14px;">
+                    &larr; Back to Seats
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
+
+<style>
+    .meal-card:hover {
+        border-color: #007bff !important;
+        background: #f8fbff;
+    }
+</style>

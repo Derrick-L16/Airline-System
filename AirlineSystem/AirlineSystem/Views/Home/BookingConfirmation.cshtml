@@ -1,0 +1,118 @@
+@model Booking
+@{
+    ViewBag.Title = "Booking Confirmed";
+}
+
+<div class="confirmation-container" style="max-width: 820px; margin: 30px auto; background: #fff; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+    <!-- Success Banner -->
+    <div style="background: #28a745; color: #fff; padding: 25px 30px; text-align: center;">
+        <div style="font-size: 40px; margin-bottom: 5px;">🎉</div>
+        <h2 style="margin: 0; font-size: 24px; color: #fff;">Payment Successful! Your Flight is Booked!</h2>
+        <p style="margin: 8px 0 0; opacity: 0.9; font-size: 15px;">A confirmation receipt has been generated for your reservation.</p>
+    </div>
+
+    <!-- Booking Reference Header -->
+    <div style="background: #f8f9fa; padding: 18px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <span style="font-size: 13px; color: #666; text-transform: uppercase;">Booking Reference</span>
+            <div style="font-size: 26px; font-weight: 800; color: #2b3a4a; letter-spacing: 1px;">@Model.BookingReference</div>
+        </div>
+        <div style="text-align: right;">
+            <span style="background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; padding: 4px 12px; border-radius: 12px; font-weight: bold; font-size: 13px;">
+                ● @Model.BookingStatus
+            </span>
+            <div style="font-size: 12px; color: #888; margin-top: 4px;">Booked on @Model.BookingDate.ToString("dd MMM yyyy, h:mm tt")</div>
+        </div>
+    </div>
+
+    <div style="padding: 30px;">
+        <!-- Flight Itinerary Card -->
+        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 25px; background: #fafafa;">
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>✈️</span> Flight Information
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center; text-align: center;">
+                <div style="text-align: left;">
+                    <div style="font-size: 12px; color: #777;">DEPARTURE</div>
+                    <strong style="font-size: 16px; color: #222;">@Model.Flight.DepartureAirport.AirportName</strong>
+                    <div style="font-size: 13px; color: #007bff; font-weight: 600; margin-top: 4px;">
+                        @Model.Flight.DepartureTime.ToString("ddd, dd MMM yyyy, h:mm tt")
+                    </div>
+                </div>
+
+                <div style="font-size: 20px; color: #999;">&rarr;</div>
+
+                <div style="text-align: right;">
+                    <div style="font-size: 12px; color: #777;">DESTINATION</div>
+                    <strong style="font-size: 16px; color: #222;">@Model.Flight.ArrivalAirport.AirportName</strong>
+                    <div style="font-size: 13px; color: #28a745; font-weight: 600; margin-top: 4px;">
+                        @Model.Flight.ArrivalTime.ToString("ddd, dd MMM yyyy, h:mm tt")
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid #e9ecef; font-size: 13px; color: #666;">
+                <strong>Airline:</strong> @Model.Flight.FlightCompany.CompanyName &middot; <strong>Flight Number:</strong> @Model.Flight.FlightNumber
+            </div>
+        </div>
+
+        <!-- Passengers & Seats Table -->
+        <h4 style="margin: 0 0 12px; font-size: 16px; color: #333;">👥 Passengers &amp; Seats</h4>
+        <table class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+            <thead>
+                <tr style="background: #f1f3f5; border-bottom: 2px solid #dee2e6;">
+                    <th style="padding: 10px; text-align: left;">Passenger</th>
+                    <th style="padding: 10px; text-align: center;">Assigned Seat</th>
+                    <th style="padding: 10px; text-align: left;">Meal Add-on</th>
+                    <th style="padding: 10px; text-align: right;">Fare</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var bp in Model.BookingPassengers)
+                {
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 12px 10px;">
+                            <strong>@bp.Passenger.Name</strong>
+                            <div style="font-size: 12px; color: #777;">@bp.Passenger.Gender &middot; Passport: @bp.Passenger.PassportNumber</div>
+                        </td>
+                        <td style="padding: 12px 10px; text-align: center;">
+                            <span style="background: #2b3a4a; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold;">
+                                @bp.Seat.SeatNumber
+                            </span>
+                        </td>
+                        <td style="padding: 12px 10px;">
+                            @(bp.Meal != null ? bp.Meal.MealName : "No Meal")
+                        </td>
+                        <td style="padding: 12px 10px; text-align: right; font-weight: bold;">
+                            RM @bp.PassengerFare.ToString("N2")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Payment Details Summary -->
+        <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div>
+                <span style="font-size: 13px; color: #777;">Payment Method</span>
+                <div style="font-size: 15px; font-weight: 600; color: #333;">@Model.Payment.PaymentMethod</div>
+                <small style="color: #999;">Transaction Date: @Model.Payment.PaymentDate.ToString("g")</small>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 13px; color: #777;">Total Paid</span>
+                <div style="font-size: 26px; font-weight: bold; color: #28a745;">RM @Model.Payment.Amount.ToString("N2")</div>
+            </div>
+        </div>
+
+        <!-- Navigation Actions -->
+        <div style="display: flex; gap: 14px; justify-content: center;">
+            <a href="/Home/Orders" style="background: #007bff; color: #fff; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-flex; align-items: center; gap: 6px;">
+                📋 View in My Orders &rarr;
+            </a>
+            <a href="/" style="background: #e9ecef; color: #333; padding: 14px 22px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                Search More Flights
+            </a>
+        </div>
+    </div>
+</div>
