@@ -49,8 +49,14 @@
             <span asp-validation-for="Pax" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary">Search Flights</button>
-        <a class="btn" asp-action="CreateFlight">Create Flight</a>
-        <a class="btn" asp-action="AddAirport">Add Airport</a>
+        @if (User.IsInRole("Admin") || User.IsInRole("Member"))
+        {
+            <a class="btn" asp-action="CreateFlight">Create Flight</a>
+        }
+        @if (User.IsInRole("Member"))
+        {
+            <a class="btn" asp-action="AddAirport">Add Airport</a>
+        }
         @if (User.IsInRole("Admin") || User.IsInRole("Member"))
         {
             <a class="btn" asp-controller="Admin" asp-action="AdminFlightTable">Admin Flight Table</a>

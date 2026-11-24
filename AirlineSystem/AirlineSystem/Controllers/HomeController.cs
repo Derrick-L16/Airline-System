@@ -54,7 +54,7 @@ public class HomeController(DB db,
         return View();
     }
 
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Admin,Member")]
     public IActionResult CreateFlight()
     {
         PopulateFlightLists();
@@ -111,6 +111,7 @@ public class HomeController(DB db,
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Member")]
     public IActionResult CreateFlight(CreateFlightVM vm)
     {
         if (vm.DepartureAirportId == vm.ArrivalAirportId)

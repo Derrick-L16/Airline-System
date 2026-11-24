@@ -54,11 +54,14 @@
             <a href="/Home/Orders">Orders</a>
             <a href="/Support">Customer Support</a>
         }
+        @if (User.IsInRole("Admin") || User.IsInRole("Member"))
+        {
+            <a href="/Home/CreateFlight">Create Flight</a>
+            <a href="/Admin/AdminFlightTable">Manage Flights</a>
+        }
         @if (User.IsInRole("Admin"))
         {
             <a href="/Admin/UserManagement">User Management</a>
-            <a href="/Home/CreateFlight">Create Flight</a>
-            <a href="/Admin/AdminFlightTable">Manage Flights</a>
             <a href="/Admin/Queries">Reply Queries</a>
         }
 
