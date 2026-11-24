@@ -195,7 +195,7 @@ public class HomeController(DB db,
         if (flight is null || pax is < 1 or > 9 || seats.Count != pax || seats.Any(s => !s.SeatAvailability))
             return BadRequest("Select exactly the requested number of available seats.");
 
-        return PartialView("_MealSelection", new MealSelectionVM
+        return PartialView("SelectMeal", new MealSelectionVM
         {
             Flight = flight,
             SelectedSeats = seats,
