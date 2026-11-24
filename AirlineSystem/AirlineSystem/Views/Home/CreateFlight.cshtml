@@ -4,51 +4,86 @@
     ViewBag.Title = "Admin | Create Flight";
 }
 
-<form class="form" method="post">
-    <div asp-validation-summary="ModelOnly"></div>
-    <div class="form-title">Flight Details</div>
+<div class="flight-tools">
+    <form class="form" method="post">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="form-title">Flight Details</div>
 
-    <label asp-for="FlightNumber"></label>
-    <input asp-for="FlightNumber" autofocus placeholder="e.g. DJ101">
-    <span asp-validation-for="FlightNumber"></span>
+        <label asp-for="FlightNumber"></label>
+        <input asp-for="FlightNumber" autofocus placeholder="e.g. DJ101">
+        <span asp-validation-for="FlightNumber"></span>
 
-    <label asp-for="FlightCompanyId"></label>
-    <select asp-for="FlightCompanyId" asp-items="ViewBag.FlightCompanies">
-        <option value="">-- Select flight company --</option>
-    </select>
-    <span asp-validation-for="FlightCompanyId"></span>
+        <label asp-for="FlightCompanyId"></label>
+        <select asp-for="FlightCompanyId" asp-items="ViewBag.FlightCompanies">
+            <option value="">-- Select flight company --</option>
+        </select>
+        <span asp-validation-for="FlightCompanyId"></span>
 
-    <div class="form-title">Route and Schedule</div>
+        <div class="form-title">Route and Schedule</div>
 
-    <label asp-for="DepartureAirportId"></label>
-    <select asp-for="DepartureAirportId" asp-items="ViewBag.Airports">
-        <option value="">-- Select departure airport --</option>
-    </select>
-    <span asp-validation-for="DepartureAirportId"></span>
+        <label asp-for="DepartureAirportId"></label>
+        <select asp-for="DepartureAirportId" asp-items="ViewBag.Airports">
+            <option value="">-- Select departure airport --</option>
+        </select>
+        <span asp-validation-for="DepartureAirportId"></span>
 
-    <label asp-for="ArrivalAirportId"></label>
-    <select asp-for="ArrivalAirportId" asp-items="ViewBag.Airports">
-        <option value="">-- Select destination airport --</option>
-    </select>
-    <span asp-validation-for="ArrivalAirportId"></span>
+        <label asp-for="ArrivalAirportId"></label>
+        <select asp-for="ArrivalAirportId" asp-items="ViewBag.Airports">
+            <option value="">-- Select destination airport --</option>
+        </select>
+        <span asp-validation-for="ArrivalAirportId"></span>
 
-    <label asp-for="DepartureTime"></label>
-    <input asp-for="DepartureTime" type="datetime-local">
-    <span asp-validation-for="DepartureTime"></span>
+        <label asp-for="DepartureTime"></label>
+        <input asp-for="DepartureTime" type="datetime-local">
+        <span asp-validation-for="DepartureTime"></span>
 
-    <label asp-for="ArrivalTime"></label>
-    <input asp-for="ArrivalTime" type="datetime-local">
-    <span asp-validation-for="ArrivalTime"></span>
+        <label asp-for="ArrivalTime"></label>
+        <input asp-for="ArrivalTime" type="datetime-local">
+        <span asp-validation-for="ArrivalTime"></span>
 
-    <div class="form-title">Fare</div>
+        <div class="form-title">Fare</div>
 
-    <label asp-for="BasePrice"></label>
-    <input asp-for="BasePrice" type="number" min="0.01" step="0.01" placeholder="0.00">
-    <span asp-validation-for="BasePrice"></span>
+        <label asp-for="BasePrice"></label>
+        <input asp-for="BasePrice" type="number" min="0.01" step="0.01" placeholder="0.00">
+        <span asp-validation-for="BasePrice"></span>
 
-    <section>
-        <button type="submit">Create Flight</button>
-        <button type="reset">Reset</button>
-        <a href="/Home/Admin">Back to Admin</a>
-    </section>
-</form>
+        <section>
+            <button type="submit">Create Flight</button>
+            <button type="reset">Reset</button>
+        </section>
+    </form>
+
+    <form class="form bulk-flight-form" asp-action="BulkFlights" method="post">
+        <div class="form-title">Batch Flight Operations</div>
+        <p>Paste one comma-separated row per line. All rows are validated before any change is saved.</p>
+
+        @if (ViewBag.BulkErrors is List<string> errors)
+        {
+            <ul class="bulk-errors">
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        }
+
+        <label asp-for="BatchRows"></label>
+        <textarea asp-for="BatchRows" rows="14" placeholder="Action,FlightId,FlightNumber,CompanyId,DepartureAirportId,ArrivalAirportId,DepartureTime,ArrivalTime,BasePrice&#10;INSERT,,DJ201,1,1,2,2026-12-01 09:00,2026-12-01 11:00,250.00&#10;UPDATE,15,DJ202,1,1,3,2026-12-03 10:00,2026-12-03 12:30,300.00&#10;DELETE,18,,,,,,, "></textarea>
+        <small>Use <b>INSERT</b> with an empty FlightId; use <b>UPDATE</b> or <b>DELETE</b> with a FlightId. Date format: <code>yyyy-MM-dd HH:mm</code>.</small>
+
+        <section>
+            <button type="submit">Apply Batch Changes</button>
+            <button type="reset">Clear</button>
+        </section>
+    </form>
+</div>
+
+@section head {
+    <style>
+        .flight-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; align-items: start; }
+        .bulk-flight-form textarea { box-sizing: border-box; min-height: 22rem; resize: vertical; width: 100%; font-family: Consolas, monospace; font-size: .85rem; }
+        .bulk-flight-form small { display: block; margin-top: .5rem; color: #555; }
+        .bulk-errors { color: #b42318; margin: 0 0 1rem; padding-left: 1.25rem; }
+        @@media (max-width: 800px) { .flight-tools { grid-template-columns: 1fr; } }
+    </style>
+}

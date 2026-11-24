@@ -107,6 +107,12 @@ public class AccountController(DB db,
 
             // (3) Sign in
             hp.SignIn(u!.Id, u!.Email, u.Role, vm.RememberMe);
+
+            if (u.Role == "Admin")
+            {
+                return RedirectToAction("AdminFlightTable", "Admin");
+            }
+
             // (4) Handle return URL
             if (string.IsNullOrEmpty(returnURL))
             {

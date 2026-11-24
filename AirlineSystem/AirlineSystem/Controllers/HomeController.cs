@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace AirlineSystem.Controllers;
 
@@ -11,6 +12,9 @@ public class HomeController(DB db,
     // GET: Home/Index
     public IActionResult Index()
     {
+        if (User.IsInRole("Admin"))
+            return RedirectToAction("AdminFlightTable", "Admin");
+
         return View(CreateFlightSearchVM());
     }
 
@@ -69,14 +73,14 @@ public class HomeController(DB db,
         return View(bookings);
     }
 
-    [Authorize(Roles = "Admin,Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult CreateFlight()
     {
         PopulateFlightLists();
         return View(new CreateFlightVM());
     }
 
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult AddAirport()
     {
         PopulateAirportCountries();
@@ -85,7 +89,7 @@ public class HomeController(DB db,
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult AddAirport(Airport airport)
     {
         Console.WriteLine("========== ADD AIRPORT ==========");
@@ -126,7 +130,7 @@ public class HomeController(DB db,
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin,Member")]
+    [Authorize(Roles = "Admin")]
     public IActionResult CreateFlight(CreateFlightVM vm)
     {
         if (vm.DepartureAirportId == vm.ArrivalAirportId)
@@ -166,6 +170,148 @@ public class HomeController(DB db,
 
         PopulateFlightLists();
         return View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public IActionResult BulkFlights(CreateFlightVM vm)
+    {
+        var rows = (vm.BatchRows ?? string.Empty)
+            .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(row => !string.IsNullOrWhiteSpace(row))
+            .ToList();
+        var errors = new List<string>();
+        var operations = new List<BatchFlightOperation>();
+
+        if (rows.Count == 0)
+            errors.Add("Enter at least one batch row.");
+
+        var airportIds = db.Airports.Select(a => a.AirportId).ToHashSet();
+        var companyIds = db.FlightCompanies.Select(c => c.FlightCompanyId).ToHashSet();
+        var flights = db.Flights.ToDictionary(f => f.FlightId);
+
+        for (var index = 0; index < rows.Count; index++)
+        {
+            var rowNumber = index + 1;
+            var columns = rows[index].Split(',', StringSplitOptions.TrimEntries);
+
+            if (index == 0 && columns[0].Equals("Action", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (columns.Length != 9)
+            {
+                errors.Add($"Row {rowNumber}: expected 9 comma-separated columns.");
+                continue;
+            }
+
+            var action = columns[0].ToUpperInvariant();
+            if (action is not ("INSERT" or "UPDATE" or "DELETE"))
+            {
+                errors.Add($"Row {rowNumber}: action must be INSERT, UPDATE, or DELETE.");
+                continue;
+            }
+
+            var hasFlightId = int.TryParse(columns[1], out var flightId) && flightId > 0;
+
+            if (action == "DELETE")
+            {
+                if (!hasFlightId)
+                {
+                    errors.Add($"Row {rowNumber}: a valid FlightId is required for DELETE.");
+                    continue;
+                }
+
+                if (!flights.ContainsKey(flightId))
+                    errors.Add($"Row {rowNumber}: flight ID {flightId} does not exist.");
+                else
+                    operations.Add(new BatchFlightOperation(action, flightId, null));
+                continue;
+            }
+
+            if (action == "UPDATE" && !hasFlightId)
+            {
+                errors.Add($"Row {rowNumber}: a valid FlightId is required for UPDATE.");
+                continue;
+            }
+
+            if (action == "UPDATE" && !flights.ContainsKey(flightId))
+            {
+                errors.Add($"Row {rowNumber}: flight ID {flightId} does not exist.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(columns[2]) || columns[2].Length > 20 ||
+                !int.TryParse(columns[3], out var companyId) || !companyIds.Contains(companyId) ||
+                !int.TryParse(columns[4], out var departureAirportId) || !airportIds.Contains(departureAirportId) ||
+                !int.TryParse(columns[5], out var arrivalAirportId) || !airportIds.Contains(arrivalAirportId) ||
+                !DateTime.TryParse(columns[6], CultureInfo.InvariantCulture, DateTimeStyles.None, out var departureTime) ||
+                !DateTime.TryParse(columns[7], CultureInfo.InvariantCulture, DateTimeStyles.None, out var arrivalTime) ||
+                !decimal.TryParse(columns[8], CultureInfo.InvariantCulture, out var basePrice) ||
+                basePrice <= 0 || departureAirportId == arrivalAirportId || arrivalTime <= departureTime)
+            {
+                errors.Add($"Row {rowNumber}: check the flight details, IDs, times, and price.");
+                continue;
+            }
+
+            operations.Add(new BatchFlightOperation(action, flightId, new Flight
+            {
+                FlightNumber = columns[2],
+                FlightCompanyId = companyId,
+                DepartureAirportId = departureAirportId,
+                ArrivalAirportId = arrivalAirportId,
+                DepartureTime = departureTime,
+                ArrivalTime = arrivalTime,
+                BasePrice = basePrice
+            }));
+        }
+
+        if (errors.Count > 0)
+        {
+            ViewBag.BulkErrors = errors;
+            PopulateFlightLists();
+            return View("CreateFlight", vm);
+        }
+
+        using var transaction = db.Database.BeginTransaction();
+        foreach (var operation in operations)
+        {
+            if (operation.Action == "INSERT")
+            {
+                db.Flights.Add(operation.Flight!);
+                continue;
+            }
+
+            if (operation.Action == "UPDATE")
+            {
+                var flight = flights[operation.FlightId];
+                var replacement = operation.Flight!;
+                flight.FlightNumber = replacement.FlightNumber;
+                flight.FlightCompanyId = replacement.FlightCompanyId;
+                flight.DepartureAirportId = replacement.DepartureAirportId;
+                flight.ArrivalAirportId = replacement.ArrivalAirportId;
+                flight.DepartureTime = replacement.DepartureTime;
+                flight.ArrivalTime = replacement.ArrivalTime;
+                flight.BasePrice = replacement.BasePrice;
+                continue;
+            }
+
+            var bookingIds = db.Bookings.Where(b => b.FlightId == operation.FlightId).Select(b => b.BookingId).ToList();
+            var seatIds = db.Seats.Where(s => s.FlightId == operation.FlightId).Select(s => s.SeatId).ToList();
+            db.BookingPassengers.RemoveRange(db.BookingPassengers.Where(bp => bookingIds.Contains(bp.BookingId) || seatIds.Contains(bp.SeatId)));
+            db.Payments.RemoveRange(db.Payments.Where(p => bookingIds.Contains(p.BookingId)));
+            db.Bookings.RemoveRange(db.Bookings.Where(b => b.FlightId == operation.FlightId));
+            db.Seats.RemoveRange(db.Seats.Where(s => s.FlightId == operation.FlightId));
+            db.Flights.Remove(flights[operation.FlightId]);
+        }
+
+        db.SaveChanges();
+        foreach (var operation in operations.Where(o => o.Action == "INSERT"))
+            EnsureFlightSeats(operation.Flight!.FlightId);
+        transaction.Commit();
+
+        TempData["Info"] = $"Applied {operations.Count} batch flight operation(s).";
+        return RedirectToAction(nameof(CreateFlight));
     }
 
     [Authorize(Roles = "Member")]
@@ -571,6 +717,8 @@ public class HomeController(DB db,
         }));
         db.SaveChanges();
     }
+
+    private sealed record BatchFlightOperation(string Action, int FlightId, Flight? Flight);
 
     private FlightSearchVM CreateFlightSearchVM()
     {

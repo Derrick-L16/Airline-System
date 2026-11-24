@@ -121,6 +121,9 @@ public class RecaptchaResult
 }
 public class CreateFlightVM
 {
+    [DisplayName("Batch flight rows")]
+    public string? BatchRows { get; set; }
+
     [Required]
     [StringLength(20)]
     [DisplayName("Flight Number")]
