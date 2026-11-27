@@ -3,7 +3,7 @@
 <div class="container mt-5" id="booking-step">
     <h2>@Model.Flight.FlightCompany.CompanyName @Model.Flight.FlightNumber</h2>
     <p>@Model.Flight.DepartureAirport.AirportName → @Model.Flight.ArrivalAirport.AirportName</p>
-    <p>Select <strong>@Model.Pax seat@(Model.Pax > 1 ? "s" : "")</strong> for @Model.Pax passenger@(Model.Pax > 1 ? "s" : "").</p>
+    <p>Select a seat for each passenger. The first seat selected is for Passenger 1, the second is for Passenger 2, and so on.</p>
     <p class="seat-legend"><span class="available-key"></span> Available <span class="unavailable-key"></span> Unavailable</p>
     <form asp-action="SelectMeals" method="post" data-ajax="true" data-ajax-update="#booking-step" data-ajax-mode="replace">
         @Html.AntiForgeryToken()
@@ -13,7 +13,7 @@
             <div class="aisle">AISLE</div>
             <div class="seat-column">@foreach (var seat in rightSeats) { if (seat.SeatAvailability) { <button type="button" class="seat available" data-id="@seat.SeatId">@seat.SeatNumber</button> } else { <button type="button" class="seat unavailable" disabled>@seat.SeatNumber</button> } }</div>
         </div></div>
-        <p id="selected-seat" class="mt-3">Select @Model.Pax seat@(Model.Pax > 1 ? "s" : "") to continue.</p>
+        <p id="selected-seat" class="mt-3">Select a seat for Passenger 1.</p>
         <button type="submit" id="continue-booking" class="btn btn-primary" disabled>Continue to Meal Selection &rarr;</button> <a asp-action="Index" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
@@ -22,5 +22,5 @@
 </style> }
 @section foot { <script>
     const maximumSeats=@Model.Pax,selected=[],selectedInput=document.getElementById('selected-seat-ids'),message=document.getElementById('selected-seat'),continueButton=document.getElementById('continue-booking');
-    document.querySelectorAll('.seat.available').forEach(seat=>seat.addEventListener('click',()=>{const id=seat.dataset.id,position=selected.indexOf(id);if(position>=0){selected.splice(position,1);seat.classList.remove('selected')}else if(selected.length<maximumSeats){selected.push(id);seat.classList.add('selected')}else{message.textContent=`You can select only ${maximumSeats} seat(s).`;return}selectedInput.value=selected.join(',');message.textContent=`${selected.length} of ${maximumSeats} seat(s) selected.`;continueButton.disabled=selected.length!==maximumSeats;}));
+    document.querySelectorAll('.seat.available').forEach(seat=>seat.addEventListener('click',()=>{const id=seat.dataset.id,position=selected.indexOf(id);if(position>=0){selected.splice(position,1);seat.classList.remove('selected')}else if(selected.length<maximumSeats){selected.push(id);seat.classList.add('selected')}else{return}selectedInput.value=selected.join(',');message.textContent=selected.length===maximumSeats?'All passenger seats selected.':`Select a seat for Passenger ${selected.length+1}.`;continueButton.disabled=selected.length!==maximumSeats;}));
 </script> }

@@ -356,13 +356,20 @@ public class HomeController(DB db,
         if (flight is null || pax is < 1 or > 9 || seats.Count != pax || seats.Any(s => !s.SeatAvailability))
             return BadRequest("Select exactly the requested number of available seats.");
 
+        var passengers = GetPassengerDetails();
+        if (passengers.Count != pax)
+            return RedirectToAction(nameof(InputPassengerDetails), new { flightId, pax });
+        for (var i = 0; i < pax; i++) passengers[i].SeatId = selectedIds[i];
+        SavePassengerDetails(passengers);
+
         var vm = new MealSelectionVM
         {
             Flight = flight,
             SelectedSeats = seats,
             Meals = db.Meals.OrderBy(m => m.MealName).ToList(),
             Pax = pax,
-            SelectedSeatIds = selectedSeatIds
+            SelectedSeatIds = selectedSeatIds,
+            Passengers = passengers
         };
 
         if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Request.Headers.ContainsKey("X-Requested-With"))
@@ -408,7 +415,9 @@ public class HomeController(DB db,
         int.TryParse(memberIdStr, out var memberId);
         var member = db.Members.Find(memberId);
 
-        var passengers = GeneratePassengers(member, seats, selectedMeal, flight.BasePrice);
+        var savedPassengerDetails = GetPassengerDetails();
+        var passengers = savedPassengerDetails.Count == pax && TryCreatePassengers(flight, pax, savedPassengerDetails, out var enteredPassengers, out _)
+            ? enteredPassengers! : GeneratePassengers(member, seats, selectedMeal, flight.BasePrice);
 
         var vm = new CheckoutVM
         {
@@ -453,7 +462,9 @@ public class HomeController(DB db,
         int.TryParse(memberIdStr, out var memberId);
         var member = db.Members.Find(memberId);
 
-        var passengers = GeneratePassengers(member, seats, selectedMeal, flight.BasePrice);
+        var savedPassengerDetails = GetPassengerDetails();
+        var passengers = savedPassengerDetails.Count == pax && TryCreatePassengers(flight, pax, savedPassengerDetails, out var enteredPassengers, out _)
+            ? enteredPassengers! : GeneratePassengers(member, seats, selectedMeal, flight.BasePrice);
         var totalFlightFare = passengers.Sum(p => p.FlightFare);
         var totalMealFare = passengers.Sum(p => p.MealPrice);
         var grandTotal = totalFlightFare + totalMealFare;
@@ -469,7 +480,7 @@ public class HomeController(DB db,
             Pax = pax,
             SelectedSeatIds = selectedSeatIds,
             SelectedMealId = selectedMealId,
-            SelectedMealName = selectedMeal != null ? $"{selectedMeal.MealName} (+RM {selectedMeal.Price:N2})" : "No In-Flight Meal",
+            SelectedMealName = savedPassengerDetails.Count == pax ? "Individual selections" : (selectedMeal != null ? $"{selectedMeal.MealName} (+RM {selectedMeal.Price:N2})" : "No In-Flight Meal"),
             TotalFlightFare = totalFlightFare,
             TotalMealFare = totalMealFare,
             GrandTotal = grandTotal,
@@ -508,7 +519,10 @@ public class HomeController(DB db,
         }
 
         var member = db.Members.Find(memberId);
-        var passengers = GeneratePassengers(member, seats, selectedMeal, flight.BasePrice);
+        var savedPassengerDetails = GetPassengerDetails();
+        var passengers = savedPassengerDetails.Count == pax && TryCreatePassengers(flight, pax, savedPassengerDetails, out var enteredPassengers, out _)
+            ? enteredPassengers! : GeneratePassengers(member, seats, selectedMeal, flight.BasePrice);
+        grandTotal = passengers.Sum(p => p.Subtotal);
 
         // 1. Create Booking
         var booking = new Booking
@@ -531,7 +545,7 @@ public class HomeController(DB db,
                 Name = p.Name,
                 Gender = p.Gender,
                 PassportNumber = p.PassportNumber,
-                PassportExpiryDate = DateTime.Now.AddYears(5),
+                PassportExpiryDate = p.PassportExpiryDate == default ? DateTime.Now.AddYears(5) : p.PassportExpiryDate,
                 NationalityCountryId = 1 // Default to Malaysia
             };
             db.Passengers.Add(passenger);
@@ -604,6 +618,61 @@ public class HomeController(DB db,
     }
 
     [Authorize(Roles = "Member")]
+    public IActionResult InputPassengerDetails(int flightId, int pax)
+    {
+        var flight = GetFlight(flightId);
+        if (flight is null || pax is < 1 or > 9) return RedirectToAction(nameof(Index));
+        EnsureFlightSeats(flightId);
+
+        var memberId = int.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var id) ? id : 0;
+        var member = db.Members.Find(memberId);
+        var passengers = Enumerable.Range(0, pax).Select(index => new PassengerBookingInputVM
+        {
+            Name = index == 0 ? member?.Name ?? "" : "",
+            PassportNumber = index == 0 ? member?.PassportNo ?? "" : "",
+            Gender = "",
+            PassportExpiryDate = DateTime.Today.AddYears(1)
+        }).ToList();
+
+        return View(new InputPassengerDetailsVM
+        {
+            Flight = flight, Pax = pax, Passengers = passengers
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Member")]
+    public IActionResult InputPassengerDetails(int flightId, int pax, List<PassengerBookingInputVM> passengers)
+    {
+        var flight = GetFlight(flightId);
+        string? error = null;
+        if (flight is null || !ValidatePassengerDetails(pax, passengers, out error))
+        {
+            ModelState.AddModelError("", error ?? "Please complete every passenger's details.");
+            return View(new InputPassengerDetailsVM { Flight = flight ?? new Flight(), Pax = pax, Passengers = passengers ?? [] });
+        }
+        SavePassengerDetails(passengers);
+        return RedirectToAction(nameof(SelectSeat), new { flightId, pax });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Member")]
+    public IActionResult CheckoutPassengerDetails(int flightId, int pax, string selectedSeatIds, int?[] selectedMealIds)
+    {
+        var flight = GetFlight(flightId);
+        var passengers = GetPassengerDetails();
+        if (flight is null || passengers.Count != pax || selectedMealIds.Length != pax)
+            return RedirectToAction(nameof(InputPassengerDetails), new { flightId, pax });
+        for (var i = 0; i < pax; i++) passengers[i].MealId = selectedMealIds[i];
+        if (!TryCreatePassengers(flight, pax, passengers, out var selected, out _))
+            return RedirectToAction(nameof(InputPassengerDetails), new { flightId, pax });
+        SavePassengerDetails(passengers);
+        return View("Checkout", new CheckoutVM { Flight = flight, Pax = pax, SelectedSeatIds = selectedSeatIds, SelectedMealId = 0, Passengers = selected! });
+    }
+
+    [Authorize(Roles = "Member")]
     public IActionResult BookingConfirmation(int bookingId)
     {
         var memberIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -624,6 +693,70 @@ public class HomeController(DB db,
             return NotFound();
 
         return View(booking);
+    }
+
+    private Flight? GetFlight(int flightId) => db.Flights
+        .Include(f => f.FlightCompany).Include(f => f.DepartureAirport).Include(f => f.ArrivalAirport)
+        .FirstOrDefault(f => f.FlightId == flightId);
+
+    private void SavePassengerDetails(List<PassengerBookingInputVM> passengers) =>
+        TempData["PassengerDetails"] = System.Text.Json.JsonSerializer.Serialize(passengers);
+
+    private List<PassengerBookingInputVM> GetPassengerDetails()
+    {
+        if (TempData["PassengerDetails"] is not string json) return [];
+        TempData.Keep("PassengerDetails");
+        return System.Text.Json.JsonSerializer.Deserialize<List<PassengerBookingInputVM>>(json) ?? [];
+    }
+
+    private static bool ValidatePassengerDetails(int pax, List<PassengerBookingInputVM>? passengers, out string? error)
+    {
+        error = null;
+        if (pax is < 1 or > 9 || passengers is null || passengers.Count != pax || passengers.Any(p => string.IsNullOrWhiteSpace(p.Name) || string.IsNullOrWhiteSpace(p.Gender) || string.IsNullOrWhiteSpace(p.PassportNumber) || !p.PassportExpiryDate.HasValue || p.PassportExpiryDate.Value.Date <= DateTime.Today))
+        {
+            error = "Enter a name, gender, passport number, and a future passport expiry date for every passenger.";
+            return false;
+        }
+        return true;
+    }
+
+    private bool TryCreatePassengers(Flight flight, int pax, List<PassengerBookingInputVM>? inputs, out List<CheckoutPassengerVM>? passengers, out string? error)
+    {
+        passengers = null;
+        error = null;
+        if (pax is < 1 or > 9 || inputs is null || inputs.Count != pax || inputs.Any(p => string.IsNullOrWhiteSpace(p.Name) || string.IsNullOrWhiteSpace(p.Gender) || string.IsNullOrWhiteSpace(p.PassportNumber) || !p.PassportExpiryDate.HasValue || p.PassportExpiryDate.Value.Date <= DateTime.Today))
+        {
+            error = "Enter a name, gender, passport number, and a future passport expiry date for every passenger.";
+            return false;
+        }
+        if (inputs.Select(p => p.SeatId).Distinct().Count() != pax)
+        {
+            error = "Each passenger must have a different seat.";
+            return false;
+        }
+        var seats = db.Seats.Where(s => s.FlightId == flight.FlightId && inputs.Select(p => p.SeatId).Contains(s.SeatId) && s.SeatAvailability).ToDictionary(s => s.SeatId);
+        if (seats.Count != pax)
+        {
+            error = "One or more selected seats are no longer available.";
+            return false;
+        }
+        var mealIds = inputs.Where(p => p.MealId.GetValueOrDefault() > 0).Select(p => p.MealId!.Value).Distinct().ToList();
+        var meals = db.Meals.Where(m => mealIds.Contains(m.MealId)).ToDictionary(m => m.MealId);
+        if (meals.Count != mealIds.Count)
+        {
+            error = "One or more selected meals are unavailable.";
+            return false;
+        }
+        passengers = inputs.Select((p, index) =>
+        {
+            meals.TryGetValue(p.MealId ?? 0, out var meal);
+            return new CheckoutPassengerVM
+            {
+                PassengerIndex = index + 1, Name = p.Name.Trim(), Gender = p.Gender, PassportNumber = p.PassportNumber.Trim(), PassportExpiryDate = p.PassportExpiryDate!.Value,
+                SeatId = p.SeatId, SeatNumber = seats[p.SeatId].SeatNumber, MealId = meal?.MealId, MealName = meal?.MealName ?? "No In-Flight Meal", MealPrice = meal?.Price ?? 0, FlightFare = flight.BasePrice
+            };
+        }).ToList();
+        return true;
     }
 
     private List<CheckoutPassengerVM> GeneratePassengers(Member? member, List<Seat> seats, Meal? selectedMeal, decimal basePrice)

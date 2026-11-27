@@ -1,0 +1,28 @@
+@model InputPassengerDetailsVM
+@{ ViewBag.Title = "Passenger Details"; }
+
+<div class="container" style="max-width:900px;margin:30px auto;">
+    <h2>Passenger details</h2>
+    <p class="text-muted">Complete the details for each of the @Model.Pax passenger(s). You will choose seats and meals in the next steps.</p>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form asp-action="InputPassengerDetails" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="flightId" value="@Model.Flight.FlightId" />
+        <input type="hidden" name="pax" value="@Model.Pax" />
+        @for (var i = 0; i < Model.Passengers.Count; i++)
+        {
+            <section style="margin:20px 0;padding:20px;border:1px solid #d8dee4;border-radius:10px;background:#fff;">
+                <h4 style="margin-top:0;">Passenger @(i + 1)</h4>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;">
+                    <div><label asp-for="Passengers[i].Name">Full name</label><input asp-for="Passengers[i].Name" class="form-control" /><span asp-validation-for="Passengers[i].Name" class="text-danger"></span></div>
+                    <div><label asp-for="Passengers[i].Gender">Gender</label><select asp-for="Passengers[i].Gender" class="form-select"><option value="">Choose gender</option><option>Male</option><option>Female</option><option>Prefer not to say</option></select><span asp-validation-for="Passengers[i].Gender" class="text-danger"></span></div>
+                    <div><label asp-for="Passengers[i].PassportNumber">Passport number</label><input asp-for="Passengers[i].PassportNumber" class="form-control" /><span asp-validation-for="Passengers[i].PassportNumber" class="text-danger"></span></div>
+                    <div><label asp-for="Passengers[i].PassportExpiryDate">Passport expiry date</label><input asp-for="Passengers[i].PassportExpiryDate" type="date" class="form-control" /><span asp-validation-for="Passengers[i].PassportExpiryDate" class="text-danger"></span></div>
+                </div>
+            </section>
+        }
+        <button class="btn btn-primary" type="submit">Continue to seat selection &rarr;</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+

@@ -257,6 +257,31 @@ public class MealSelectionVM
     public List<Meal> Meals { get; set; } = [];
     public int Pax { get; set; }
     public string SelectedSeatIds { get; set; } = "";
+    public List<PassengerBookingInputVM> Passengers { get; set; } = [];
+}
+
+public class PassengerBookingInputVM
+{
+    [Required, StringLength(100)]
+    public string Name { get; set; } = "";
+    [Required]
+    public string Gender { get; set; } = "";
+    [Required, StringLength(30)]
+    public string PassportNumber { get; set; } = "";
+    [Required, DataType(DataType.Date)]
+    public DateTime? PassportExpiryDate { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "Choose a seat.")]
+    public int SeatId { get; set; }
+    public int? MealId { get; set; }
+}
+
+public class InputPassengerDetailsVM
+{
+    public Flight Flight { get; set; } = null!;
+    public int Pax { get; set; }
+    public List<Seat> Seats { get; set; } = [];
+    public List<Meal> Meals { get; set; } = [];
+    public List<PassengerBookingInputVM> Passengers { get; set; } = [];
 }
 
 public class CheckoutPassengerVM
@@ -265,6 +290,7 @@ public class CheckoutPassengerVM
     public string Name { get; set; } = "";
     public string Gender { get; set; } = "Male";
     public string PassportNumber { get; set; } = "";
+    public DateTime PassportExpiryDate { get; set; }
     public int SeatId { get; set; }
     public string SeatNumber { get; set; } = "";
     public int? MealId { get; set; }

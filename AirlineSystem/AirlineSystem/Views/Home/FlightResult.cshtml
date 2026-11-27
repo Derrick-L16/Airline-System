@@ -28,7 +28,7 @@
                         <td>
                             @if (User.IsInRole("Member"))
                             {
-                                <a class="btn btn-primary" asp-action="SelectSeat" asp-route-flightId="@flight.FlightId" asp-route-pax="@Model.Search.Pax">Book Flight</a>
+                                <a class="btn btn-primary" asp-action="InputPassengerDetails" asp-route-flightId="@flight.FlightId" asp-route-pax="@Model.Search.Pax">Book Flight</a>
                             }
                         </td>
                     </tr>
