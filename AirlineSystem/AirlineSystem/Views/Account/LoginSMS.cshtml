@@ -1,0 +1,37 @@
+﻿@model LoginSmsVM
+
+@{
+    ViewBag.Title = "Account | Login with SMS";
+}
+
+<form class="form" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <label asp-for="PhoneNumber"></label>
+    <div>
+        <input asp-for="PhoneNumber" placeholder="01x-xxxxxxx" autofocus>
+        <button type="button" data-otp="/Account/SendLoginOtp">Send OTP</button>
+        <span id="otpStatus"></span>
+    </div>
+    <span asp-validation-for="PhoneNumber"></span>
+
+    <label asp-for="OtpCode"></label>
+    <input asp-for="OtpCode" placeholder="6-digit OTP" maxlength="6">
+    <span asp-validation-for="OtpCode"></span>
+
+    <br>
+    <label>
+        <input asp-for="RememberMe">Remember Me
+    </label>
+    <br>
+
+    <section>
+        <button>Login</button>
+        <button type="reset">Reset</button>
+    </section>
+</form>
+
+<p>
+    [ <a href="/Account/Login">Login with Password</a> |
+    <a href="/Account/Register">Register</a> ]
+</p>

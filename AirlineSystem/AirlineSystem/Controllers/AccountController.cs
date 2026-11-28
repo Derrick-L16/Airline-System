@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using System.Net.Mail;
 
 namespace AirlineSystem.Controllers;
 
 public class AccountController(DB db,
                                Helper hp,
-                               IConfiguration config) : Controller
+                               IConfiguration config,
+                               IWebHostEnvironment en,
+                               IMemoryCache cache) : Controller
 {
     // GET: Account/Login
     public IActionResult Login()
@@ -124,6 +128,86 @@ public class AccountController(DB db,
         return View(vm);
     }
 
+    // GET: Account/LoginSMS
+    public IActionResult LoginSMS()
+    {
+        return View();
+    }
+
+    // POST: Account/LoginSMS
+    [HttpPost]
+    public async Task<IActionResult> LoginSMS(LoginSmsVM vm, string? returnURL)
+    {
+        var m = db.Members.FirstOrDefault(m => m.PhoneNumber == vm.PhoneNumber);
+
+        if (m == null)
+        {
+            ModelState.AddModelError("PhoneNumber", "No account found with this phone number.");
+        }
+        else if (m.Status == "Blocked")
+        {
+            ModelState.AddModelError("", "Your account has been permanently blocked. Please contact the administrator.");
+        }
+        else if (m.LockoutEnd.HasValue && m.LockoutEnd.Value > DateTime.Now)
+        {
+            var remaining = Math.Ceiling((m.LockoutEnd.Value - DateTime.Now).TotalMinutes);
+            ModelState.AddModelError("", $"Account temporarily locked. Try again in {remaining} minute(s).");
+        }
+        else if (ModelState.IsValid("PhoneNumber") && ModelState.IsValid("OtpCode"))
+        {
+            bool valid = await hp.CheckOTP(vm.PhoneNumber, vm.OtpCode);
+            if (!valid)
+            {
+                ModelState.AddModelError("OtpCode", "Invalid or expired OTP.");
+            }
+        }
+
+        if (ModelState.IsValid)
+        {
+            m!.FailedLoginAttempts = 0;
+            m.LockoutCount = 0;
+            m.LockoutEnd = null;
+            db.SaveChanges();
+            TempData["Info"] = "Login successfully.";
+            hp.SignIn(m.Id, m.Email, m.Role, vm.RememberMe);
+            if (string.IsNullOrEmpty(returnURL))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return Redirect(returnURL);
+        }
+        return View(vm);
+    }
+
+    // POST: Account/SendLoginOtp
+    public async Task<IActionResult> SendLoginOtp(string phoneNumber)
+    {
+        
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return Json(new { success = false, message = "Please enter your phone number." });
+        }
+
+        var m = db.Members.FirstOrDefault(m => m.PhoneNumber == phoneNumber);
+
+        if (m == null)
+        {
+            return Json(new { success = false, message = "No account found with this phone number." });
+        }
+        if (m.Status == "Blocked")
+        {
+            return Json(new { success = false, message = "Your account has been blocked. Please contact the administrator." });
+        }
+        if (m.LockoutEnd.HasValue && m.LockoutEnd.Value > DateTime.Now)
+        {
+            var remaining = Math.Ceiling((m.LockoutEnd.Value - DateTime.Now).TotalMinutes);
+            return Json(new { success = false, message = $"Account temporarily locked. Try again in {remaining} minute(s)." });
+        }
+
+        bool sent = await hp.SendOTP(m.PhoneNumber);
+        return Json(new { success = sent, message = sent ? "OTP sent!" : "Failed to send SMS." });
+    }
+
     // GET: Account/Logout
     public IActionResult Logout(string? returnURL)
     {
@@ -141,12 +225,6 @@ public class AccountController(DB db,
         return View();
     }
 
-
-
-    // ------------------------------------------------------------------------
-    // Others
-    // ------------------------------------------------------------------------
-
     // GET: Account/CheckEmail
     public bool CheckEmail(string email)
     {
@@ -161,8 +239,21 @@ public class AccountController(DB db,
 
     // POST: Account/Register
     [HttpPost]
-    public IActionResult Register(RegisterVM vm)
+    public async Task<IActionResult> Register(RegisterVM vm)
     {
+        if (ModelState.IsValid("PhoneNumber") && db.Members.Any(m => m.PhoneNumber == vm.PhoneNumber))
+        {
+            ModelState.AddModelError("PhoneNumber", "Phone number has been registered.");
+        }
+
+        if (ModelState.IsValid("PhoneNumber") && ModelState.IsValid("OtpCode"))
+        {
+            bool valid = await hp.CheckOTP(vm.PhoneNumber, vm.OtpCode);
+            if (!valid)
+            {
+                ModelState.AddModelError("OtpCode", "Invalid or expired OTP.");
+            }
+        }
         if (ModelState.IsValid("Email") &&
             db.Users.Any(u => u.Email == vm.Email))
         {
@@ -229,6 +320,40 @@ public class AccountController(DB db,
         }
 
         return View();
+    }
+
+    // GET: Account/NewPassword?
+    public IActionResult NewPassword(string token)
+    {
+        if (string.IsNullOrEmpty(token) || !cache.TryGetValue($"reset_{token}", out string? _))
+        {
+            TempData["Info"] = "Reset link is invalid or has expired.";
+            return RedirectToAction("Login");
+        }
+        return View(new NewPasswordVM { Token = token });
+    }
+    // POST: Account/NewPassword
+    [HttpPost]
+    public IActionResult NewPassword(NewPasswordVM vm)
+    {
+        if (!cache.TryGetValue($"reset_{vm.Token}", out string? email))
+        {
+            TempData["Info"] = "Reset link is invalid or has expired.";
+            return RedirectToAction("Login");
+        }
+        if (ModelState.IsValid)
+        {
+            var u = db.Users.FirstOrDefault(u => u.Email == email);
+            if (u != null)
+            {
+                u.Hash = hp.HashPassword(vm.New);
+                db.SaveChanges();
+                cache.Remove($"reset_{vm.Token}");
+            }
+            TempData["Info"] = "Password reset successfully. Please login.";
+            return RedirectToAction("Login");
+        }
+        return View(vm);
     }
 
     // GET: Account/UpdateProfile
@@ -312,20 +437,37 @@ public class AccountController(DB db,
 
         if (ModelState.IsValid)
         {
-            // Generate random password
-            string password = hp.RandomPassword();
+            
+            string token = Guid.NewGuid().ToString("n");
+            cache.Set($"reset_{token}", u!.Email, TimeSpan.FromMinutes(15));
 
-            // Update user (admin or member) record
-            u!.Hash = hp.HashPassword(password);
+            SendResetPasswordEmail(u, token);
 
-            // TODO: Send reset password email
-
-            // Temporary only
-            TempData["Info"] = $"Password reset to <b>{password}</b>.";
-            return RedirectToAction();
+            TempData["Info"] = "A password reset link has been sent to your email.";
+            return RedirectToAction("Login");
         }
 
         return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SendRegisterOtp(string phoneNumber)
+    {
+        if (db.Members.Any(m => m.PhoneNumber == phoneNumber))
+        {
+            return Json(new { success = false, message = "Phone number has been registered." });
+        }
+        // 1. Generate 6-digit OTP
+        string otp = Random.Shared.Next(100000, 999999).ToString();
+
+        // 2. Save OTP, phone and expiry (e.g. 5 mins) in Session
+        HttpContext.Session.SetString("RegOtp", otp);
+        HttpContext.Session.SetString("RegPhone", phoneNumber);
+        HttpContext.Session.SetString("RegOtpExpiry", DateTime.Now.AddMinutes(5).ToString("o"));
+
+        // 3. Send SMS
+        bool sent = await hp.SendOTP(phoneNumber);
+        return Json(new { success = sent, message = sent ? "OTP sent!" : "Failed to send SMS." });
     }
 
     // GET: Account/Detail
@@ -371,5 +513,44 @@ public class AccountController(DB db,
         }
 
         return RedirectToAction("UserManagement", "Admin");
+    }
+
+    private void SendResetPasswordEmail(User u, string token)
+    {
+        var mail = new MailMessage();
+        mail.To.Add(new MailAddress(u.Email, u.Name));
+        mail.Subject = "Reset Password";
+        mail.IsBodyHtml = true;
+
+        // Generate link to NewPassword page with the secret token
+        var url = Url.Action("NewPassword", "Account", new { token }, Request.Scheme);
+
+        var path = u switch
+        {
+            // Admin => Path.Combine(en.WebRootPath, "images", "admin.jpg"), // DreameJet Logo
+            Member m => Path.Combine(en.WebRootPath, "photos", m.PhotoURL),
+            _ => "",
+        };
+
+        if (System.IO.File.Exists(path))
+        {
+            var att = new Attachment(path);
+            att.ContentId = "photo";
+            mail.Attachments.Add(att);
+        }
+
+        mail.Body = $@"
+        <img src='cid:photo' style='width: 200px; height: 200px; border: 1px solid #333'>
+        <p>Dear {u.Name},</p>
+        <p>We received a request to reset your password.</p>
+        <p>
+            Please click the link below to set a new password (valid for 15 minutes):<br>
+            <a href='{url}'>Reset My Password</a>
+        </p>
+        <p>If you did not request this, you can safely ignore this email.</p>
+        <p>From, DreaméJet</p>
+    ";
+
+        hp.SendEmail(mail);
     }
 }

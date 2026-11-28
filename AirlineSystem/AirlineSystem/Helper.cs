@@ -2,14 +2,21 @@
 using Microsoft.AspNetCore.Identity;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Rest.Verify.V2.Service;
+using Twilio.Types;
 
 namespace AirlineSystem;
 
 // TODO
 public class Helper(IWebHostEnvironment en,
-                    IHttpContextAccessor ct)
+                    IHttpContextAccessor ct,
+                    IConfiguration config)
 {
     // ------------------------------------------------------------------------
     // Photo Upload
@@ -64,18 +71,15 @@ public class Helper(IWebHostEnvironment en,
     // Security Helper Functions
     // ------------------------------------------------------------------------
 
-    // TODO
     private readonly PasswordHasher<object> ph = new();
 
     public string HashPassword(string password)
-    {
-        // TODO
+    { 
         return ph.HashPassword(0, password);
     }
 
     public bool VerifyPassword(string hash, string password)
     {
-        // TODO
         return ph.VerifyHashedPassword(0, hash, password)
                == PasswordVerificationResult.Success;
     }
@@ -116,5 +120,88 @@ public class Helper(IWebHostEnvironment en,
         string s = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         
         return Random.Shared.GetString(s, 10);
+    }
+    // ------------------------------------------------------------------------
+    // Email Helper Functions
+    // ------------------------------------------------------------------------
+
+    public async void SendEmail(MailMessage mail)
+    {
+        string user = config["Smtp:User"] ?? "";
+        string pass = config["Smtp:Pass"] ?? "";
+        string name = config["Smtp:Name"] ?? "";
+        string host = config["Smtp:Host"] ?? "";
+        int port = config.GetValue<int>("Smtp:Port");
+
+        mail.From = new MailAddress(user, name);
+
+        using var smtp = new SmtpClient
+        {
+            Host = host,
+            Port = port,
+            EnableSsl = true,
+            Credentials = new NetworkCredential(user, pass),
+        };
+
+        await smtp.SendMailAsync(mail);
+    }
+
+    // ------------------------------------------------------------------------
+    // SMS Verification Helper Functions
+    // ------------------------------------------------------------------------
+    private string FormatPhone(string toPhoneNumber)
+    {
+        toPhoneNumber = toPhoneNumber.Replace("-", "").Trim();
+        if (toPhoneNumber.StartsWith("01"))
+        {
+            return "+60" + toPhoneNumber.Substring(1);
+        }
+        if (!toPhoneNumber.StartsWith("+"))
+        {
+            return "+60" + toPhoneNumber;
+        }
+        return toPhoneNumber;
+    }
+
+    public async Task<bool> SendOTP(string toPhoneNumber)
+    {
+        try
+        {
+            TwilioClient.Init(config["Twilio:AccountSid"], config["Twilio:AuthToken"]);
+
+            var verification = await VerificationResource.CreateAsync(
+                to: FormatPhone(toPhoneNumber),
+                channel: "sms",
+                pathServiceSid: config["Twilio:VerifyServiceSid"]
+            );
+
+            return verification.Status == "pending";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("TWILIO ERROR: " + ex.Message);
+            return false;
+        }
+    }
+
+    public async Task<bool> CheckOTP(string toPhoneNumber, string code)
+    {
+        try
+        {
+            TwilioClient.Init(config["Twilio:AccountSid"], config["Twilio:AuthToken"]);
+
+            var check = await VerificationCheckResource.CreateAsync(
+                to: FormatPhone(toPhoneNumber),
+                code: code.Trim(),
+                pathServiceSid: config["Twilio:VerifyServiceSid"]
+            );
+
+            return check.Status == "approved";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("TWILIO ERROR: " + ex.Message);
+            return false;
+        }
     }
 }

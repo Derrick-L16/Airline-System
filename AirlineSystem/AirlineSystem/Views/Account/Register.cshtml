@@ -26,8 +26,16 @@
     <span asp-validation-for="Name"></span>
 
     <label asp-for="PhoneNumber"></label>
-    <input asp-for="PhoneNumber">
+    <div>
+        <input asp-for="PhoneNumber" placeholder="01x-xxxxxxx">
+        <button type="button" data-otp="/Account/SendRegisterOtp">Send OTP</button>
+        <span id="otpStatus"></span> <!-- Shows "OTP Sent! or error -->
+    </div>
     <span asp-validation-for="PhoneNumber"></span>
+
+    <label asp-for="OtpCode"></label>
+    <input asp-for="OtpCode" maxlength="6">
+    <span asp-validation-for="OtpCode"></span>
 
     <label asp-for="Photo"></label>
     <div>

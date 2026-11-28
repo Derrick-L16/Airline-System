@@ -7,16 +7,16 @@ using Stripe;
 var builder = WebApplication.CreateBuilder(args);
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
 builder.Services.AddSqlServer<DB>($@"
     Data Source=(LocalDB)\MSSQLLocalDB;
     AttachDbFilename={builder.Environment.ContentRootPath}\DB.mdf;
 ");
 builder.Services.AddScoped<Helper>();
-
-// TODO
 builder.Services.AddAuthentication().AddCookie();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -85,4 +85,5 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapHub<ChatHub>("/chatHub");
 app.MapDefaultControllerRoute();
+app.UseSession();
 app.Run();

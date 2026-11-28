@@ -170,6 +170,35 @@ $(document).on('click', '[data-camera]', async function (e) {
     }
 });
 
+// SMS OTP Button Click
+$(document).on('click', '[data-otp]', async function () {
+    const btn = $(this);
+    const url = btn.data('otp');
+    const phone = $('#PhoneNumber').val().trim();
+    const status = $('#otpStatus');
+
+    if (!phone) {
+        status.css('color', 'red').text('Please enter your phone number.');
+        return;
+    }
+
+    btn.prop('disabled', true).text('Sending...');
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ phoneNumber: phone })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+        status.css('color', 'green').text(data.message);
+        // Optional: 60s countdown before re-enabling btn
+    } else {
+        status.css('color', 'red').text(data.message);
+        btn.prop('disabled', false).text('Send OTP');
+    }
+});
 function closeCamera() {
     if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());

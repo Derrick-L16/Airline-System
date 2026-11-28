@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,6 +22,16 @@ public class LoginVM
     public bool RememberMe { get; set; }
 }
 
+public class LoginSmsVM
+{
+    [DisplayName("Phone Number")]
+    [RegularExpression(@"^01\d-\d{7,8}$", ErrorMessage = "Format: 01x-xxxxxxx")]
+    public string PhoneNumber { get; set; }
+    [DisplayName("SMS OTP")]
+    public string OtpCode { get; set; }
+    public bool RememberMe { get; set; }
+
+}
 public class RegisterVM
 {
     [StringLength(100)]
@@ -57,6 +68,9 @@ public class RegisterVM
     [DataType(DataType.Date)]
     [DisplayName("Passport Expiry Date")]
     public DateOnly? PassportExpiry { get; set; }
+    [Required(ErrorMessage = "Please enter the SMS OTP.")]
+    [DisplayName("SMS OTP")]
+    public string OtpCode { get; set; }
 }
 
 public class UpdatePasswordVM
@@ -65,6 +79,22 @@ public class UpdatePasswordVM
     [DataType(DataType.Password)]
     [DisplayName("Current Password")]
     public string Current { get; set; }
+
+    [StringLength(100, MinimumLength = 5)]
+    [DataType(DataType.Password)]
+    [DisplayName("New Password")]
+    public string New { get; set; }
+
+    [StringLength(100, MinimumLength = 5)]
+    [Compare("New")]
+    [DataType(DataType.Password)]
+    [DisplayName("Confirm Password")]
+    public string Confirm { get; set; }
+}
+
+public class NewPasswordVM
+{
+    public string Token { get; set; }
 
     [StringLength(100, MinimumLength = 5)]
     [DataType(DataType.Password)]
